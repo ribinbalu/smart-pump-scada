@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<!-- saved from url=(0030)http://192.168.0.164/dashboard -->
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Ribin's Home Automation // Industrial SCADA</title><style>
 *{box-sizing:border-box}html,body{margin:0;padding:0;background:#000;color:#f1f5f9;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
 body{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 10px}
@@ -80,19 +78,25 @@ td{padding:6px 10px;border-top:1px solid #111a2e;color:#e2e8f0}
 .cfg-item input{width:100%;padding:7px;background:#0b1120;border:1px solid #334155;border-radius:6px;color:#00f3ff;font-weight:bold;font-size:0.88rem}
 .cap-btn{margin-top:6px;padding:7px 8px;background:linear-gradient(90deg,#00ff88,#00f3ff);color:#000;border:none;border-radius:6px;font-size:0.7rem;font-weight:bold;width:100%;cursor:pointer}
 .ftr{display:flex;gap:20px;margin-top:8px;justify-content:center}
-.lnk{color:#94a3b8;text-decoration:none;font-size:0.74rem;border-bottom:1px dashed #475569;padding-bottom:2px}
+.lnk{color:#94a3b8;text-decoration:none;font-size:0.74rem;border-bottom:1px dashed #475569;padding-bottom:2px;cursor:pointer}
 </style></head><body>
 <div class="win-bg" id="tmrAlert"><div class="win-box" style="max-width:350px;border-color:#ff2a5f;text-align:center;padding:22px">
-  <h2 style="color:#ff2a5f;margin:0 0 10px 0">⚠ TIMER ENABLED!</h2>
+  <h2 style="color:#ff2a5f;margin:0 0 10px 0">&#9888; TIMER ENABLED!</h2>
   <p style="font-size:0.84rem;color:#e2e8f0;line-height:1.45;margin:0 0 18px 0">Automatic Timer Schedule is currently active.<br><br>Disable timer schedules in the <b>Timer Window</b> if you want to turn on the motor manually.</p>
   <button class="btn-start" onclick="closeWin('tmrAlert')">OK, UNDERSTOOD</button>
 </div></div>
 
+<div class="win-bg" id="remoteAlert"><div class="win-box" style="max-width:360px;border-color:#ffb800;text-align:center;padding:22px">
+  <h2 style="color:#ffb800;margin:0 0 10px 0">&#9888; LOCAL WI-FI REQUIRED</h2>
+  <p id="remoteAlertTxt" style="font-size:0.84rem;color:#e2e8f0;line-height:1.45;margin:0 0 18px 0">For hardware safety, changing Wi-Fi credentials or flashing OTA firmware requires a direct local Home Wi-Fi connection to the ESP32.</p>
+  <button class="btn-start" onclick="closeWin('remoteAlert')">OK, UNDERSTOOD</button>
+</div></div>
+
 <div class="win-bg" id="winPass"><div class="win-box" style="max-width:360px;text-align:center;padding:20px">
-  <h2 style="color:#00f3ff;margin:0 0 8px 0;font-size:1rem">🔒 SECURITY AUTHENTICATION</h2>
+  <h2 style="color:#00f3ff;margin:0 0 8px 0;font-size:1rem">&#128274; SECURITY AUTHENTICATION</h2>
   <p style="font-size:0.76rem;color:#94a3b8;margin:0 0 14px 0">Enter password to unlock Calibration &amp; Safety pages for <b>10 minutes</b>:</p>
   <input type="password" id="admPass" placeholder="Enter Password" onkeydown="if(event.key==='Enter')verifyPass()" style="width:100%;padding:10px;background:#000;border:1px solid #00f3ff;border-radius:8px;color:#fff;text-align:center;font-size:1rem;letter-spacing:3px;outline:none">
-  <div id="passErr" style="color:#ff2a5f;font-size:0.75rem;margin-top:8px;display:none;font-weight:bold">✖ Incorrect Password! Access Denied.</div>
+  <div id="passErr" style="color:#ff2a5f;font-size:0.75rem;margin-top:8px;display:none;font-weight:bold">&#10006; Incorrect Password! Access Denied.</div>
   <div class="btn-row" style="margin-top:16px">
     <button class="btn-stop" onclick="closeWin('winPass')">CANCEL</button>
     <button class="btn-start" onclick="verifyPass()">UNLOCK (10 MIN)</button>
@@ -100,74 +104,74 @@ td{padding:6px 10px;border-top:1px solid #111a2e;color:#e2e8f0}
 </div></div>
 
 <div class="win-bg" id="winTimers"><div class="win-box">
-  <div class="win-hdr"><h2>⏰ MULTI-TIMER &amp; SOLAR-SYNC SCHEDULE</h2><button class="btn-cls" onclick="closeWin('winTimers')">✕ CLOSE</button></div>
+  <div class="win-hdr"><h2>&#9200; MULTI-TIMER &amp; SOLAR-SYNC SCHEDULE</h2><button class="btn-cls" onclick="closeWin('winTimers')">&#10005; CLOSE</button></div>
   <div class="win-body">
     <div class="sch-slot" style="border-color:#ffb800;background:#090702">
       <div class="sch-top">
         <label style="font-size:0.8rem;color:#ffb800;font-weight:bold;display:flex;align-items:center;gap:6px;cursor:pointer">
-          <input type="checkbox" id="solEn" onchange="saveSolar()" style="width:16px;height:16px;accent-color:#ffb800"> ☀ SOLAR-SYNC DAYLIGHT TOP-UP MODE
+          <input type="checkbox" id="solEn" onchange="saveSolar()" style="width:16px;height:16px;accent-color:#ffb800"> &#9728; SOLAR-SYNC DAYLIGHT TOP-UP MODE
         </label>
         <div style="display:flex;align-items:center;gap:5px;font-size:0.74rem;color:#cbd5e1">
           <span>Hours:</span>
           <input type="number" id="solSt" min="6" max="18" value="11" onchange="saveSolar()" style="width:46px;padding:4px;background:#000;color:#ffb800;border:1px solid #ffb800;border-radius:4px;text-align:center">:00 to
           <input type="number" id="solSp" min="7" max="20" value="15" onchange="saveSolar()" style="width:46px;padding:4px;background:#000;color:#ffb800;border:1px solid #ffb800;border-radius:4px;text-align:center">:00
-          <span>• Trigger ≤</span>
+          <span>&bull; Trigger &le;</span>
           <input type="number" id="solTrg" min="30" max="90" value="75" onchange="saveSolar()" style="width:48px;padding:4px;background:#000;color:#00ff88;border:1px solid #00ff88;border-radius:4px;text-align:center">%
         </div>
       </div>
     </div>
-    <div id="timersBox" style="display:flex;flex-direction:column;gap:8px"><div class="sch-slot"><div class="sch-top"><label style="font-size:0.8rem;color:#00f3ff;font-weight:bold;display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="tEn0" onchange="saveTmr(0)" style="width:16px;height:16px;accent-color:#00f3ff"> SCHEDULE 1</label><div style="display:flex;align-items:center;gap:6px"><input type="time" id="tSt0" value="06:00" onchange="saveTmr(0)"><span style="font-size:0.75rem;color:#94a3b8">to</span><input type="time" id="tEt0" value="07:00" onchange="saveTmr(0)"></div></div><div class="days-row"><div class="d-btn on" id="tD0_0" onclick="togDay(0,0)">SUN</div><div class="d-btn on" id="tD0_1" onclick="togDay(0,1)">MON</div><div class="d-btn on" id="tD0_2" onclick="togDay(0,2)">TUE</div><div class="d-btn on" id="tD0_3" onclick="togDay(0,3)">WED</div><div class="d-btn on" id="tD0_4" onclick="togDay(0,4)">THU</div><div class="d-btn on" id="tD0_5" onclick="togDay(0,5)">FRI</div><div class="d-btn on" id="tD0_6" onclick="togDay(0,6)">SAT</div></div></div><div class="sch-slot"><div class="sch-top"><label style="font-size:0.8rem;color:#00f3ff;font-weight:bold;display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="tEn1" onchange="saveTmr(1)" style="width:16px;height:16px;accent-color:#00f3ff"> SCHEDULE 2</label><div style="display:flex;align-items:center;gap:6px"><input type="time" id="tSt1" value="06:00" onchange="saveTmr(1)"><span style="font-size:0.75rem;color:#94a3b8">to</span><input type="time" id="tEt1" value="07:00" onchange="saveTmr(1)"></div></div><div class="days-row"><div class="d-btn on" id="tD1_0" onclick="togDay(1,0)">SUN</div><div class="d-btn on" id="tD1_1" onclick="togDay(1,1)">MON</div><div class="d-btn on" id="tD1_2" onclick="togDay(1,2)">TUE</div><div class="d-btn on" id="tD1_3" onclick="togDay(1,3)">WED</div><div class="d-btn on" id="tD1_4" onclick="togDay(1,4)">THU</div><div class="d-btn on" id="tD1_5" onclick="togDay(1,5)">FRI</div><div class="d-btn on" id="tD1_6" onclick="togDay(1,6)">SAT</div></div></div><div class="sch-slot"><div class="sch-top"><label style="font-size:0.8rem;color:#00f3ff;font-weight:bold;display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="tEn2" onchange="saveTmr(2)" style="width:16px;height:16px;accent-color:#00f3ff"> SCHEDULE 3</label><div style="display:flex;align-items:center;gap:6px"><input type="time" id="tSt2" value="06:00" onchange="saveTmr(2)"><span style="font-size:0.75rem;color:#94a3b8">to</span><input type="time" id="tEt2" value="07:00" onchange="saveTmr(2)"></div></div><div class="days-row"><div class="d-btn on" id="tD2_0" onclick="togDay(2,0)">SUN</div><div class="d-btn on" id="tD2_1" onclick="togDay(2,1)">MON</div><div class="d-btn on" id="tD2_2" onclick="togDay(2,2)">TUE</div><div class="d-btn on" id="tD2_3" onclick="togDay(2,3)">WED</div><div class="d-btn on" id="tD2_4" onclick="togDay(2,4)">THU</div><div class="d-btn on" id="tD2_5" onclick="togDay(2,5)">FRI</div><div class="d-btn on" id="tD2_6" onclick="togDay(2,6)">SAT</div></div></div></div>
+    <div id="timersBox" style="display:flex;flex-direction:column;gap:8px"></div>
     <p style="font-size:0.71rem;color:#94a3b8;margin:2px 0 0 0;text-align:center">All schedules and Solar-Sync settings save automatically to non-volatile flash memory.</p>
   </div>
 </div></div>
 
 <div class="win-bg" id="winHistory"><div class="win-box">
   <div class="win-hdr">
-    <h2 id="histWinTitle">📋 30-DAY MOTOR RUNNING HISTORY</h2>
+    <h2 id="histWinTitle">&#128203; 30-DAY MOTOR RUNNING HISTORY</h2>
     <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
-      <button class="btn-act" id="btnToggleGraph" onclick="toggleGraphView()">📊 BAR GRAPH</button>
-      <button class="btn-act" style="background:linear-gradient(90deg,#ffb800,#ff2a5f);color:#fff" onclick="setHistView(2)">⚠ FAULT LOG (20)</button>
-      <button class="btn-act" style="background:#1e293b;color:#00f3ff;border:1px solid #00f3ff" onclick="exportCSV()">⬇ CSV</button>
-      <button class="btn-cls" onclick="closeWin('winHistory')">✕ CLOSE</button>
+      <button class="btn-act" id="btnToggleGraph" onclick="toggleGraphView()">&#128202; BAR GRAPH</button>
+      <button class="btn-act" style="background:linear-gradient(90deg,#ffb800,#ff2a5f);color:#fff" onclick="setHistView(2)">&#9888; FAULT LOG (20)</button>
+      <button class="btn-act" style="background:#1e293b;color:#00f3ff;border:1px solid #00f3ff" onclick="exportCSV()">&#11015; CSV</button>
+      <button class="btn-cls" onclick="closeWin('winHistory')">&#10005; CLOSE</button>
     </div>
   </div>
   <div class="win-body">
     <div class="bar-info">
       <span id="selBarTxt" style="color:#00f3ff;font-weight:bold">30-Day Motor Runtime Log</span>
-      <span id="histSum" style="color:#00ff88;font-weight:bold">30-Day Total: 157m 37s</span>
+      <span id="histSum" style="color:#00ff88;font-weight:bold">30-Day Total: 0m</span>
     </div>
     <div id="paneTable" style="display:flex;flex-direction:column;gap:8px">
       <div class="tbl-wrap">
         <table><thead><tr><th>DATE</th><th>FILL CYCLES</th><th>RUN DURATION</th><th>STATUS</th></tr></thead>
-        <tbody id="histBody"><tr><td><b>20/10/2026</b> <span style="color:#00ff88">(Today)</span></td><td>3 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 3s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>19/10/2026</b> </td><td>24 Cycles</td><td style="color:#00f3ff;font-weight:bold">55m 45s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>18/10/2026</b> </td><td>40 Cycles</td><td style="color:#00f3ff;font-weight:bold">45m 18s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>17/10/2026</b> </td><td>52 Cycles</td><td style="color:#00f3ff;font-weight:bold">44m 32s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>16/10/2026</b> </td><td>49 Cycles</td><td style="color:#00f3ff;font-weight:bold">11m 54s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>15/10/2026</b> </td><td>2 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 5s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>14/10/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>13/10/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>12/10/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>11/10/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>10/10/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>09/10/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>08/10/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>07/10/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>06/10/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>05/10/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>04/10/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>03/10/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>02/10/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>01/10/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>30/09/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>29/09/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>28/09/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>27/09/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>26/09/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>25/09/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>24/09/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>23/09/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>22/09/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr><tr><td><b>21/09/2026</b> </td><td>0 Cycles</td><td style="color:#00f3ff;font-weight:bold">0m 0s</td><td><span style="color:#00ff88">NORMAL</span></td></tr></tbody></table>
+        <tbody id="histBody"></tbody></table>
       </div>
     </div>
     <div id="paneGraph" style="display:none;flex-direction:column;gap:8px">
-      <div class="chart-single" id="barChart"><div class="b-col " id="bCol0" onclick="selectBar(0)" onmouseenter="selectBar(0)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">21/09</span></div><div class="b-col " id="bCol1" onclick="selectBar(1)" onmouseenter="selectBar(1)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">22/09</span></div><div class="b-col " id="bCol2" onclick="selectBar(2)" onmouseenter="selectBar(2)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">23/09</span></div><div class="b-col " id="bCol3" onclick="selectBar(3)" onmouseenter="selectBar(3)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">24/09</span></div><div class="b-col " id="bCol4" onclick="selectBar(4)" onmouseenter="selectBar(4)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">25/09</span></div><div class="b-col " id="bCol5" onclick="selectBar(5)" onmouseenter="selectBar(5)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">26/09</span></div><div class="b-col " id="bCol6" onclick="selectBar(6)" onmouseenter="selectBar(6)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">27/09</span></div><div class="b-col " id="bCol7" onclick="selectBar(7)" onmouseenter="selectBar(7)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">28/09</span></div><div class="b-col " id="bCol8" onclick="selectBar(8)" onmouseenter="selectBar(8)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">29/09</span></div><div class="b-col " id="bCol9" onclick="selectBar(9)" onmouseenter="selectBar(9)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">30/09</span></div><div class="b-col " id="bCol10" onclick="selectBar(10)" onmouseenter="selectBar(10)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">01/10</span></div><div class="b-col " id="bCol11" onclick="selectBar(11)" onmouseenter="selectBar(11)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">02/10</span></div><div class="b-col " id="bCol12" onclick="selectBar(12)" onmouseenter="selectBar(12)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">03/10</span></div><div class="b-col " id="bCol13" onclick="selectBar(13)" onmouseenter="selectBar(13)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">04/10</span></div><div class="b-col " id="bCol14" onclick="selectBar(14)" onmouseenter="selectBar(14)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">05/10</span></div><div class="b-col " id="bCol15" onclick="selectBar(15)" onmouseenter="selectBar(15)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">06/10</span></div><div class="b-col " id="bCol16" onclick="selectBar(16)" onmouseenter="selectBar(16)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">07/10</span></div><div class="b-col " id="bCol17" onclick="selectBar(17)" onmouseenter="selectBar(17)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">08/10</span></div><div class="b-col " id="bCol18" onclick="selectBar(18)" onmouseenter="selectBar(18)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">09/10</span></div><div class="b-col " id="bCol19" onclick="selectBar(19)" onmouseenter="selectBar(19)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">10/10</span></div><div class="b-col " id="bCol20" onclick="selectBar(20)" onmouseenter="selectBar(20)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">11/10</span></div><div class="b-col " id="bCol21" onclick="selectBar(21)" onmouseenter="selectBar(21)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">12/10</span></div><div class="b-col " id="bCol22" onclick="selectBar(22)" onmouseenter="selectBar(22)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">13/10</span></div><div class="b-col " id="bCol23" onclick="selectBar(23)" onmouseenter="selectBar(23)"><div class="b-fill" style="height:4%;background:#1e293b"></div><span class="b-dt">14/10</span></div><div class="b-col " id="bCol24" onclick="selectBar(24)" onmouseenter="selectBar(24)"><div class="b-fill" style="height:4%;background:linear-gradient(to top,#0088ff,#00ff88)"></div><span class="b-dt">15/10</span></div><div class="b-col " id="bCol25" onclick="selectBar(25)" onmouseenter="selectBar(25)"><div class="b-fill" style="height:21%;background:linear-gradient(to top,#0088ff,#00ff88)"></div><span class="b-dt">16/10</span></div><div class="b-col " id="bCol26" onclick="selectBar(26)" onmouseenter="selectBar(26)"><div class="b-fill" style="height:80%;background:linear-gradient(to top,#0088ff,#00ff88)"></div><span class="b-dt">17/10</span></div><div class="b-col " id="bCol27" onclick="selectBar(27)" onmouseenter="selectBar(27)"><div class="b-fill" style="height:81%;background:linear-gradient(to top,#0088ff,#00ff88)"></div><span class="b-dt">18/10</span></div><div class="b-col " id="bCol28" onclick="selectBar(28)" onmouseenter="selectBar(28)"><div class="b-fill" style="height:100%;background:linear-gradient(to top,#0088ff,#00ff88)"></div><span class="b-dt">19/10</span></div><div class="b-col sel" id="bCol29" onclick="selectBar(29)" onmouseenter="selectBar(29)"><div class="b-fill" style="height:4%;background:linear-gradient(to top,#0088ff,#00ff88)"></div><span class="b-dt">20/10</span></div></div>
-      <span style="font-size:0.66rem;color:#64748b;text-align:center">All 30 days fit on a single screen without horizontal scrolling • Tap any bar for exact details</span>
+      <div class="chart-single" id="barChart"></div>
+      <span style="font-size:0.66rem;color:#64748b;text-align:center">All 30 days fit on a single screen without horizontal scrolling &bull; Tap any bar for exact details</span>
     </div>
     <div id="paneFaults" style="display:none;flex-direction:column;gap:8px">
       <div class="tbl-wrap">
         <table><thead><tr><th>#</th><th>TIMESTAMP</th><th>BLACK-BOX ALARM EVENT</th><th>TRIGGER READING</th></tr></thead>
-        <tbody id="fltBody"><tr><td>#1</td><td><b>19/10 04:46</b></td><td style="color:#ff2a5f;font-weight:bold">STAGE-2 MAX TIME CUTOFF</td><td style="color:#ffb800;font-weight:bold">44 %</td></tr><tr><td>#2</td><td><b>19/10 04:00</b></td><td style="color:#ff2a5f;font-weight:bold">DRY-RUN / NO FLOW</td><td style="color:#ffb800;font-weight:bold">16 %</td></tr><tr><td>#3</td><td><b>19/10 01:08</b></td><td style="color:#ff2a5f;font-weight:bold">SENSOR COVERED / NO ECHO</td><td style="color:#ffb800;font-weight:bold">0 cm</td></tr><tr><td>#4</td><td><b>18/10 22:47</b></td><td style="color:#ff2a5f;font-weight:bold">SENSOR COVERED / NO ECHO</td><td style="color:#ffb800;font-weight:bold">0 cm</td></tr><tr><td>#5</td><td><b>18/10 21:24</b></td><td style="color:#ff2a5f;font-weight:bold">SENSOR COVERED / NO ECHO</td><td style="color:#ffb800;font-weight:bold">0 cm</td></tr><tr><td>#6</td><td><b>18/10 21:24</b></td><td style="color:#ff2a5f;font-weight:bold">SENSOR COVERED / NO ECHO</td><td style="color:#ffb800;font-weight:bold">0 cm</td></tr><tr><td>#7</td><td><b>18/10 21:23</b></td><td style="color:#ff2a5f;font-weight:bold">SENSOR COVERED / NO ECHO</td><td style="color:#ffb800;font-weight:bold">0 cm</td></tr><tr><td>#8</td><td><b>18/10 21:23</b></td><td style="color:#ff2a5f;font-weight:bold">SENSOR COVERED / NO ECHO</td><td style="color:#ffb800;font-weight:bold">0 cm</td></tr><tr><td>#9</td><td><b>18/10 21:23</b></td><td style="color:#ff2a5f;font-weight:bold">SENSOR COVERED / NO ECHO</td><td style="color:#ffb800;font-weight:bold">0 cm</td></tr><tr><td>#10</td><td><b>18/10 21:23</b></td><td style="color:#ff2a5f;font-weight:bold">SENSOR COVERED / NO ECHO</td><td style="color:#ffb800;font-weight:bold">0 cm</td></tr><tr><td>#11</td><td><b>18/10 21:23</b></td><td style="color:#ff2a5f;font-weight:bold">SENSOR COVERED / NO ECHO</td><td style="color:#ffb800;font-weight:bold">0 cm</td></tr><tr><td>#12</td><td><b>18/10 21:19</b></td><td style="color:#ff2a5f;font-weight:bold">SENSOR COVERED / NO ECHO</td><td style="color:#ffb800;font-weight:bold">0 cm</td></tr><tr><td>#13</td><td><b>18/10 19:31</b></td><td style="color:#ff2a5f;font-weight:bold">SENSOR COVERED / NO ECHO</td><td style="color:#ffb800;font-weight:bold">0 cm</td></tr><tr><td>#14</td><td><b>18/10 19:30</b></td><td style="color:#ff2a5f;font-weight:bold">SENSOR COVERED / NO ECHO</td><td style="color:#ffb800;font-weight:bold">0 cm</td></tr><tr><td>#15</td><td><b>18/10 19:14</b></td><td style="color:#ff2a5f;font-weight:bold">DRY-RUN / NO FLOW</td><td style="color:#ffb800;font-weight:bold">1 %</td></tr><tr><td>#16</td><td><b>18/10 03:29</b></td><td style="color:#ff2a5f;font-weight:bold">SENSOR COVERED / NO ECHO</td><td style="color:#ffb800;font-weight:bold">0 cm</td></tr><tr><td>#17</td><td><b>18/10 03:29</b></td><td style="color:#ff2a5f;font-weight:bold">SENSOR COVERED / NO ECHO</td><td style="color:#ffb800;font-weight:bold">0 cm</td></tr><tr><td>#18</td><td><b>18/10 02:06</b></td><td style="color:#ff2a5f;font-weight:bold">SENSOR COVERED / NO ECHO</td><td style="color:#ffb800;font-weight:bold">0 cm</td></tr><tr><td>#19</td><td><b>18/10 02:03</b></td><td style="color:#ff2a5f;font-weight:bold">SENSOR COVERED / NO ECHO</td><td style="color:#ffb800;font-weight:bold">0 cm</td></tr><tr><td>#20</td><td><b>18/10 02:03</b></td><td style="color:#ff2a5f;font-weight:bold">SENSOR COVERED / NO ECHO</td><td style="color:#ffb800;font-weight:bold">0 cm</td></tr></tbody></table>
+        <tbody id="fltBody"></tbody></table>
       </div>
     </div>
   </div>
 </div></div>
 
 <div class="win-bg" id="winSonar"><div class="win-box" style="max-width:580px">
-  <div class="win-hdr"><h2>📡 ULTRASOUND &amp; DISTANCE LEVEL CALIBRATION</h2><button class="btn-cls" onclick="closeSonarCalib()">✕ CLOSE</button></div>
+  <div class="win-hdr"><h2>&#128225; ULTRASOUND &amp; DISTANCE LEVEL CALIBRATION</h2><button class="btn-cls" onclick="closeSonarCalib()">&#10005; CLOSE</button></div>
   <div class="win-body">
     <div class="bar-info" style="border-left-color:#ffb800">
-      <span style="color:#ffb800;font-weight:bold">🔒 MOTOR STRICTLY LOCKED OFF (≤20cm = MAX REACHED)</span>
-      <span>LIVE: <b id="calLiveCm" style="color:#00f3ff;font-size:0.95rem">26 cm</b> • LEVEL: <b id="calLivePct" style="color:#00ff88;font-size:0.95rem">88% (880L)</b></span>
+      <span style="color:#ffb800;font-weight:bold">&#128274; MOTOR STRICTLY LOCKED OFF (&le;20cm = MAX REACHED)</span>
+      <span>LIVE: <b id="calLiveCm" style="color:#00f3ff;font-size:0.95rem">-- cm</b> &bull; LEVEL: <b id="calLivePct" style="color:#00ff88;font-size:0.95rem">--%</b></span>
     </div>
     <span class="label" style="color:#00f3ff">1. Tank Total Height &amp; Volume Capacity (0% Empty Bottom Reference)</span>
     <div class="cfg-grid">
       <div class="cfg-item" style="border-color:#00f3ff;background:#040914">
         <label style="color:#00f3ff;font-weight:bold">Tank Total Height (Sensor to Tank Bottom cm)</label>
         <input type="number" step="0.5" id="cEmpty" value="80">
-        <button class="cap-btn" onclick="captureTankHeightNow()">🎯 Point &amp; Save Live cm as Tank Height</button>
+        <button class="cap-btn" onclick="captureTankHeightNow()">&#127919; Point &amp; Save Live cm as Tank Height</button>
       </div>
       <div class="cfg-item">
         <label>Total Tank Capacity in Liters (For Live L/m &amp; Volume)</label>
@@ -175,26 +179,26 @@ td{padding:6px 10px;border-top:1px solid #111a2e;color:#e2e8f0}
         <div style="font-size:0.65rem;color:#94a3b8;margin-top:8px;line-height:1.35">Used to calculate live tank Liters, L/min pumping flow rate &amp; ETA to Full.</div>
       </div>
     </div>
-    <span class="label" style="color:#00ff88">2. Distance-Based Motor Auto-ON (Low Level) &amp; Auto-OFF (Full Level ≥20cm)</span>
+    <span class="label" style="color:#00ff88">2. Distance-Based Motor Auto-ON (Low Level) &amp; Auto-OFF (Full Level &ge;20cm)</span>
     <div class="cfg-grid">
       <div class="cfg-item" style="border-color:#ffb800">
         <label style="color:#ffb800;font-weight:bold">Motor Auto-ON Low Water Distance (cm from Sensor)</label>
         <input type="number" step="0.5" id="cOnCm" value="65">
-        <button class="cap-btn" style="background:#1e293b;color:#ffb800;border:1px solid #ffb800" onclick="document.getElementById('cOnCm').value=liveDistVal">📏 Use Live Sensor cm for Motor ON</button>
+        <button class="cap-btn" style="background:#1e293b;color:#ffb800;border:1px solid #ffb800" onclick="document.getElementById('cOnCm').value=liveDistVal">&#128207; Use Live Sensor cm for Motor ON</button>
       </div>
       <div class="cfg-item" style="border-color:#00ff88">
-        <label style="color:#ffb800;font-weight:bold">Motor Auto-OFF Full Tank Distance (100% Full, Min 20cm)</label>
+        <label style="color:#00ff88;font-weight:bold">Motor Auto-OFF Full Tank Distance (100% Full, Min 20cm)</label>
         <input type="number" step="0.5" id="cFull" min="20.0" value="20">
-        <button class="cap-btn" style="background:#1e293b;color:#00ff88;border:1px solid #ffb800" onclick="document.getElementById('cFull').value=Math.max(20.0,liveDistVal)">📏 Use Live Sensor cm for Motor OFF</button>
+        <button class="cap-btn" style="background:#1e293b;color:#00ff88;border:1px solid #00ff88" onclick="document.getElementById('cFull').value=Math.max(20.0,liveDistVal)">&#128207; Use Live Sensor cm for Motor OFF</button>
       </div>
     </div>
-    <button class="btn-start" style="padding:12px;margin-top:4px" onclick="saveCalib('sonarMsg','winSonar')">✔ SAVE TANK HEIGHT &amp; MOTOR ON/OFF DISTANCES</button>
+    <button class="btn-start" style="padding:12px;margin-top:4px" onclick="saveCalib('sonarMsg','winSonar')">&#10004; SAVE TANK HEIGHT &amp; MOTOR ON/OFF DISTANCES</button>
     <div id="sonarMsg" style="font-size:0.78rem;color:#00ff88;text-align:center;display:none">Tank Height &amp; Motor Distances Saved!</div>
   </div>
 </div></div>
 
 <div class="win-bg" id="winSafety"><div class="win-box" style="max-width:560px">
-  <div class="win-hdr"><h2>🛡 INDUSTRIAL SAFETY, DRY-RUN &amp; VOLTAGE</h2><button class="btn-cls" onclick="closeSafetyWin()">✕ CLOSE</button></div>
+  <div class="win-hdr"><h2>&#128737; INDUSTRIAL SAFETY, DRY-RUN &amp; VOLTAGE</h2><button class="btn-cls" onclick="closeSafetyWin()">&#10005; CLOSE</button></div>
   <div class="win-body">
     <span class="label" style="color:#00ff88">1. Prime-Loss / Dry-Run &amp; Anti-Short-Cycle Cooldown</span>
     <div class="cfg-grid">
@@ -213,95 +217,95 @@ td{padding:6px 10px;border-top:1px solid #111a2e;color:#e2e8f0}
       <div class="cfg-item"><label>Under-Voltage Cutoff (V)</label><input type="number" id="cVmin" value="100"></div>
       <div class="cfg-item"><label>Over-Voltage Cutoff (V)</label><input type="number" id="cVmax" value="270"></div>
     </div>
-    <button class="btn-start" style="padding:12px;margin-top:4px" onclick="saveCalib('sftMsg','winSafety')">✔ SAVE INDUSTRIAL SAFETY LIMITS</button>
+    <button class="btn-start" style="padding:12px;margin-top:4px" onclick="saveCalib('sftMsg','winSafety')">&#10004; SAVE INDUSTRIAL SAFETY LIMITS</button>
     <div id="sftMsg" style="font-size:0.78rem;color:#00ff88;text-align:center;display:none">Industrial Safety Settings Saved!</div>
   </div>
 </div></div>
 
 <div class="hdr"><h1>RIBIN'S HOME AUTOMATION</h1>
 <div class="sub-bar">
-  <span><i class="dot" id="netDot" style="background: rgb(0, 255, 136); box-shadow: rgb(0, 255, 136) 0px 0px 8px;"></i>SYSTIME: <b id="sysTime" style="color:#00f3ff">00:21:03</b></span>
-  <span>TIMER: <b id="runTmr" style="color:#00ff88">00:01</b></span>
+  <span><i class="dot" id="netDot"></i>SYSTIME: <b id="sysTime" style="color:#00f3ff">--:--:--</b></span>
+  <span>TIMER: <b id="runTmr" style="color:#00ff88">00:00</b></span>
   <span>FLOW: <b id="flowTxt" style="color:#00f3ff">0.0 L/m</b></span>
   <span>ETA FULL: <b id="etaTxt" style="color:#ffb800">--:--</b></span>
 </div></div>
 <div class="scada-grid">
   <div class="card">
     <div class="card-hdr">
-      <span class="label">TANK (<span id="tankHInfo" style="color:#00ff88">H:63.5cm • ON:56.3cm • OFF:20.8cm</span>)</span>
-      <span id="dist" style="font-size:0.75rem;color:#00f3ff;font-weight:bold">Sensor: 26 cm</span>
+      <span class="label">TANK (<span id="tankHInfo" style="color:#00ff88">H:80cm &bull; ON:65cm &bull; OFF:20cm</span>)</span>
+      <span id="dist" style="font-size:0.75rem;color:#00f3ff;font-weight:bold">Sensor: -- cm</span>
     </div>
     <div class="mimic-box">
       <svg viewBox="0 0 360 220" width="100%" height="100%">
-        <defs><pattern id="grid" width="18" height="18" patternUnits="userSpaceOnUse"><path d="M 18 0 L 0 0 0 18" fill="none" stroke="#0d1526" stroke-width="1"></path></pattern>
-        <lineargradient id="pipeG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#334155"></stop><stop offset="50%" stop-color="#64748b"></stop><stop offset="100%" stop-color="#1e293b"></stop></lineargradient>
-        <clippath id="tClip"><rect x="214" y="28" width="92" height="154" rx="12"></rect></clippath></defs>
-        <rect width="360" height="220" fill="url(#grid)"></rect>
-        <path d="M 10 172 L 45 172" fill="none" stroke="url(#pipeG)" stroke-width="12" stroke-linecap="round"></path>
-        <path d="M 75 155 L 145 155 L 145 16 L 260 16 L 260 30" fill="none" stroke="url(#pipeG)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"></path>
-        <path id="pipeFlow" d="M 12 172 L 50 172 L 75 155 L 145 155 L 145 16 L 260 16 L 260 30" fill="none" stroke="#00f3ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" class="flow-off"></path>
-        <circle cx="145" cy="60" r="7" fill="#000" stroke="#475569" stroke-width="2"></circle><circle id="valveLed" cx="145" cy="60" r="3.5" fill="#475569"></circle>
+        <defs><pattern id="grid" width="18" height="18" patternUnits="userSpaceOnUse"><path d="M 18 0 L 0 0 0 18" fill="none" stroke="#0d1526" stroke-width="1"/></pattern>
+        <linearGradient id="pipeG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#334155"/><stop offset="50%" stop-color="#64748b"/><stop offset="100%" stop-color="#1e293b"/></linearGradient>
+        <clipPath id="tClip"><rect x="214" y="28" width="92" height="154" rx="12"/></clipPath></defs>
+        <rect width="360" height="220" fill="url(#grid)"/>
+        <path d="M 10 172 L 45 172" fill="none" stroke="url(#pipeG)" stroke-width="12" stroke-linecap="round"/>
+        <path d="M 75 155 L 145 155 L 145 16 L 260 16 L 260 30" fill="none" stroke="url(#pipeG)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+        <path id="pipeFlow" d="M 12 172 L 50 172 L 75 155 L 145 155 L 145 16 L 260 16 L 260 30" fill="none" stroke="#00f3ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" class="flow-off"/>
+        <circle cx="145" cy="60" r="7" fill="#000" stroke="#475569" stroke-width="2"/><circle id="valveLed" cx="145" cy="60" r="3.5" fill="#475569"/>
         <g transform="translate(32,126)">
-          <path d="M 8 56 L 52 56 L 58 64 L 2 64 Z" fill="#334155"></path><rect x="4" y="4" width="52" height="52" rx="12" fill="#0b1120" stroke="#00f3ff" stroke-width="2"></rect>
-          <circle cx="30" cy="30" r="20" fill="#000" stroke="#334155" stroke-width="2"></circle>
-          <g id="pumpImpeller" style="transform-origin:30px 30px"><path d="M30 12 L33 25 L46 22 L35 30 L46 38 L33 35 L30 48 L27 35 L14 38 L25 30 L14 22 L27 25 Z" fill="#94a3b8"></path><circle cx="30" cy="30" r="6" fill="#00f3ff"></circle></g>
+          <path d="M 8 56 L 52 56 L 58 64 L 2 64 Z" fill="#334155"/><rect x="4" y="4" width="52" height="52" rx="12" fill="#0b1120" stroke="#00f3ff" stroke-width="2"/>
+          <circle cx="30" cy="30" r="20" fill="#000" stroke="#334155" stroke-width="2"/>
+          <g id="pumpImpeller" style="transform-origin:30px 30px"><path d="M30 12 L33 25 L46 22 L35 30 L46 38 L33 35 L30 48 L27 35 L14 38 L25 30 L14 22 L27 25 Z" fill="#94a3b8"/><circle cx="30" cy="30" r="6" fill="#00f3ff"/></g>
           <text x="30" y="76" fill="#94a3b8" font-size="8.5" text-anchor="middle" font-weight="bold">CENTRIFUGAL PUMP</text>
         </g>
-        <rect x="238" y="18" width="44" height="10" rx="3" fill="#334155" stroke="#00f3ff" stroke-width="1.5"></rect>
-        <rect x="212" y="26" width="96" height="158" rx="14" fill="#000" stroke="#00f3ff" stroke-width="3"></rect>
+        <rect x="238" y="18" width="44" height="10" rx="3" fill="#334155" stroke="#00f3ff" stroke-width="1.5"/>
+        <rect x="212" y="26" width="96" height="158" rx="14" fill="#000" stroke="#00f3ff" stroke-width="3"/>
         <g clip-path="url(#tClip)">
-          <line id="inletStream" x1="260" y1="28" x2="260" y2="182" stroke="#00f3ff" stroke-width="4" class="stream-off"></line>
-          <g id="waterGrp" transform="translate(0,18.47999999999999)" style="transition:transform 0.5s ease">
-            <path id="wPath2" class="wave2" d="M 130 28 Q 150 22 170 28 T 210 28 T 250 28 T 290 28 T 330 28 T 370 28 T 410 28 L 410 200 L 130 200 Z" fill="#00ff88" opacity="0.45"></path>
-            <path id="wPath1" class="wave1" d="M 130 28 Q 150 34 170 28 T 210 28 T 250 28 T 290 28 T 330 28 T 370 28 T 410 28 L 410 200 L 130 200 Z" fill="#00ff88" opacity="0.85"></path>
+          <line id="inletStream" x1="260" y1="28" x2="260" y2="182" stroke="#00f3ff" stroke-width="4" class="stream-off"/>
+          <g id="waterGrp" transform="translate(0,154)" style="transition:transform 0.5s ease">
+            <path id="wPath2" class="wave2" d="M 130 28 Q 150 22 170 28 T 210 28 T 250 28 T 290 28 T 330 28 T 370 28 T 410 28 L 410 200 L 130 200 Z" fill="#00f3ff" opacity="0.45"/>
+            <path id="wPath1" class="wave1" d="M 130 28 Q 150 34 170 28 T 210 28 T 250 28 T 290 28 T 330 28 T 370 28 T 410 28 L 410 200 L 130 200 Z" fill="#00f3ff" opacity="0.85"/>
           </g>
-          <rect x="220" y="32" width="8" height="146" rx="4" fill="#fff" opacity="0.16"></rect>
+          <rect x="220" y="32" width="8" height="146" rx="4" fill="#fff" opacity="0.16"/>
         </g>
-        <line x1="296" y1="65" x2="306" y2="65" stroke="#00f3ff" stroke-width="1.5"></line><text x="292" y="68" fill="#94a3b8" font-size="7" text-anchor="end">75%</text>
-        <line x1="294" y1="105" x2="306" y2="105" stroke="#00f3ff" stroke-width="2"></line><text x="290" y="108" fill="#00f3ff" font-size="7.5" text-anchor="end" font-weight="bold">50%</text>
-        <line x1="296" y1="144" x2="306" y2="144" stroke="#00f3ff" stroke-width="1.5"></line><text x="292" y="147" fill="#94a3b8" font-size="7" text-anchor="end">25%</text>
-        <rect x="225" y="190" width="70" height="18" rx="4" fill="#000" stroke="#1e293b"></rect>
-        <text id="svgPct" x="260" y="202" fill="#00f3ff" font-size="9.5" text-anchor="middle" font-weight="bold">88% • 880L</text>
+        <line x1="296" y1="65" x2="306" y2="65" stroke="#00f3ff" stroke-width="1.5"/><text x="292" y="68" fill="#94a3b8" font-size="7" text-anchor="end">75%</text>
+        <line x1="294" y1="105" x2="306" y2="105" stroke="#00f3ff" stroke-width="2"/><text x="290" y="108" fill="#00f3ff" font-size="7.5" text-anchor="end" font-weight="bold">50%</text>
+        <line x1="296" y1="144" x2="306" y2="144" stroke="#00f3ff" stroke-width="1.5"/><text x="292" y="147" fill="#94a3b8" font-size="7" text-anchor="end">25%</text>
+        <rect x="225" y="190" width="70" height="18" rx="4" fill="#000" stroke="#1e293b"/>
+        <text id="svgPct" x="260" y="202" fill="#00f3ff" font-size="9.5" text-anchor="middle" font-weight="bold">--%</text>
       </svg>
     </div>
     <div class="telem-row">
-      <div class="t-box"><span class="label" style="font-size:0.6rem">LAST FILL DURATION</span><div id="lastDur" style="font-size:0.8rem;font-weight:bold;color:#f1f5f9;margin-top:2px">00m 01s (00:19 20/10/26)</div></div>
-      <div class="t-box"><span class="label" style="font-size:0.6rem" id="sftSummary">DRY:3M • 40%/25M • 45M</span><div id="dailyRun" style="font-size:0.84rem;font-weight:bold;color:#00ff88;margin-top:2px">Today: 0m 3s / 120m</div></div>
+      <div class="t-box"><span class="label" style="font-size:0.6rem">LAST FILL DURATION</span><div id="lastDur" style="font-size:0.8rem;font-weight:bold;color:#f1f5f9;margin-top:2px">00m 00s (--:--)</div></div>
+      <div class="t-box"><span class="label" style="font-size:0.6rem" id="sftSummary">DRY: 3M &bull; 40%/25M &bull; 45M</span><div id="dailyRun" style="font-size:0.84rem;font-weight:bold;color:#00ff88;margin-top:2px">Today: 0m 0s / 120m</div></div>
     </div>
   </div>
   <div class="card">
-    <div><span class="label" id="vRangeLbl">LIVE TELEMETRY (SAFE: 170V - 250V)</span>
+    <div><span class="label" id="vRangeLbl">LIVE TELEMETRY (SAFE: 100V - 270V)</span>
       <div class="telem-row">
-        <div class="t-box"><span class="label" style="font-size:0.6rem">MAINS VOLTAGE</span><div class="metric" id="volt" style="color: rgb(0, 243, 255);">237 V</div><div class="bar-bg"><div id="vBar" class="bar-fill" style="width: 79%; background: rgb(0, 255, 136);"></div></div></div>
-        <div class="t-box"><span class="label" style="font-size:0.6rem">TANK CAPACITY</span><div class="metric" id="lvl">88% (880L)</div><div class="bar-bg"><div id="lBar" class="bar-fill" style="width: 88%; background: rgb(0, 255, 136);"></div></div></div>
+        <div class="t-box"><span class="label" style="font-size:0.6rem">MAINS VOLTAGE</span><div class="metric" id="volt">-- V</div><div class="bar-bg"><div id="vBar" class="bar-fill"></div></div></div>
+        <div class="t-box"><span class="label" style="font-size:0.6rem">TANK CAPACITY</span><div class="metric" id="lvl">--%</div><div class="bar-bg"><div id="lBar" class="bar-fill"></div></div></div>
       </div>
     </div>
     <div style="width:100%">
-      <div class="status-wrap"><span class="label" style="width:auto">MOTOR MATRIX</span><span id="stat" class="badge b-stdby">SOLAR-SYNC STANDBY</span></div>
+      <div class="status-wrap"><span class="label" style="width:auto">MOTOR MATRIX</span><span id="stat" class="badge b-stdby">STANDBY</span></div>
       <div class="btn-row"><button class="btn-stop" onclick="setPump(0)">STOP PUMP</button><button class="btn-start" onclick="setPump(1)">START PUMP</button></div>
       <div class="btn-row"><button class="btn-rst" onclick="resetSystem()">RESET FAULT</button><button class="btn-rbt" onclick="rebootSystem()">RESTART SYSTEM</button></div>
     </div>
     <div class="ctrl-box">
-      <div style="display:flex;justify-content:space-between;align-items:center"><span class="label" style="font-size:0.65rem">TFT BACKLIGHT DIMMER</span><span id="blValText" style="font-size:0.75rem;color:#00f3ff;font-weight:bold">60%</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center"><span class="label" style="font-size:0.65rem">TFT BACKLIGHT DIMMER</span><span id="blValText" style="font-size:0.75rem;color:#00f3ff;font-weight:bold">25%</span></div>
       <input type="range" id="blSlider" min="0" max="255" value="64" oninput="updateBlLive(this.value)" onchange="setBacklight(this.value)">
     </div>
     <div style="width:100%;margin-top:2px">
       <div class="btn-row">
-        <button class="btn-win" onclick="openWin('winTimers')">⏰ TIMERS &amp; SOLAR</button>
-        <button class="btn-win" onclick="openHistoryWindow()">📋 30 DAYS HISTORY</button>
+        <button class="btn-win" onclick="openWin('winTimers')">&#9200; TIMERS &amp; SOLAR</button>
+        <button class="btn-win" onclick="openHistoryWindow()">&#128203; 30 DAYS HISTORY</button>
       </div>
       <div class="btn-row">
-        <button class="btn-win" onclick="reqProtectedWin(0)">🔒 ULTRASOUND CALIB</button>
-        <button class="btn-win" onclick="reqProtectedWin(1)">🔒 SAFETY &amp; VOLTAGE</button>
+        <button class="btn-win" onclick="reqProtectedWin(0)">&#128274; ULTRASOUND CALIB</button>
+        <button class="btn-win" onclick="reqProtectedWin(1)">&#128274; SAFETY &amp; VOLTAGE</button>
       </div>
     </div>
   </div>
 </div>
-<div class="ftr"><a href="http://192.168.0.164/wifi" class="lnk">Wi-Fi Network Setup →</a><a href="http://192.168.0.164/update" class="lnk">Wireless Firmware OTA →</a></div>
-<script>// ============================================================================
-// SMART PUMP INDUSTRIAL SCADA CONTROLLER - v34 FINAL PRODUCTION (PART 3 OF 4)
-// ============================================================================
-
+<div class="ftr">
+  <a class="lnk" onclick="handleRemoteLink('/wifi','Wi-Fi Setup requires a direct local Home Wi-Fi connection to the ESP32!')">Wi-Fi Network Setup &rarr;</a>
+  <a class="lnk" onclick="handleRemoteLink('/update','Wireless Firmware OTA requires a direct local Home Wi-Fi connection to the ESP32!')">Wireless Firmware OTA &rarr;</a>
+</div>
+<script>
 const dNames=['SUN','MON','TUE','WED','THU','FRI','SAT'];
 const fltNames=['NONE','LOW VOLTAGE CUTOFF','HIGH VOLTAGE CUTOFF','STAGE-1 FILL TIMEOUT','STAGE-2 MAX TIME CUTOFF','DAILY 2H MAX LIMIT','SENSOR COVERED / NO ECHO','DRY-RUN / NO FLOW'];
 const PASS_TIMEOUT_MS=10*60*1000;
@@ -310,12 +314,21 @@ let authUnlockUntil=0;
 let tmrState=[{en:false,d:127,st:'06:00',et:'07:00'},{en:false,d:127,st:'12:00',et:'13:00'},{en:false,d:127,st:'18:00',et:'19:00'}];
 
 // --- HYBRID LOCAL HTTP + GLOBAL CLOUD WEBSOCKET ENGINE ---
-const isLocalEsp = (location.protocol.indexOf('http')===0 && location.hostname!=='' && location.hostname.indexOf('github')===-1 && location.hostname.indexOf('firebase')===-1);
+const isLocalEsp = (location.protocol.indexOf('http')===0 && location.hostname!=='' && location.hostname.indexOf('github')===-1 && location.hostname.indexOf('firebase')===-1 && location.hostname.indexOf('tiiny')===-1 && location.hostname.indexOf('netlify')===-1);
 let mqttClient = null, cloudModeActive = !isLocalEsp, lastLocalOkMs = Date.now();
 const TOPIC_TELEM = 'ribin/scada/hL7OLzsN/telem';
 const TOPIC_HIST  = 'ribin/scada/hL7OLzsN/hist';
 const TOPIC_FLT   = 'ribin/scada/hL7OLzsN/flt';
 const TOPIC_CMD   = 'ribin/scada/hL7OLzsN/cmd';
+
+function handleRemoteLink(localPath, msg){
+  if(isLocalEsp && !cloudModeActive){
+    window.location.href = localPath;
+  } else {
+    document.getElementById('remoteAlertTxt').innerHTML = msg + '<br><br>When connected to your home Wi-Fi, open your ESP32 local IP address in Chrome to access this page.';
+    openWin('remoteAlert');
+  }
+}
 
 function sendApiCmd(urlPath){
   if(!cloudModeActive){
@@ -652,5 +665,4 @@ function resetSystem(){sendApiCmd('/reset').then(()=>{fetchData();fetchHistory()
 function rebootSystem(){if(confirm('Restart Smart Pump Controller now?')){let st=document.getElementById('stat');st.className='badge b-flt';st.innerText='REBOOTING...';sendApiCmd('/reboot');setTimeout(()=>location.reload(),12000);}}
 function updateBlLive(v){document.getElementById('blValText').innerText=Math.round((v/255)*100)+'%';}
 function setBacklight(v){sendApiCmd('/backlight?val='+v);}
-</script>
-</body></html>
+</script></body></html>
