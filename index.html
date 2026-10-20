@@ -1,4 +1,8 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Ribin's Home Automation // Industrial SCADA</title><style>
 *{box-sizing:border-box}html,body{margin:0;padding:0;background:#000;color:#f1f5f9;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
 body{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 10px}
@@ -6,12 +10,14 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
 .hdr{display:flex;flex-direction:column;align-items:center;margin-bottom:6px;width:100%;max-width:920px}
 h1{font-size:1.3rem;letter-spacing:2.5px;color:#00f3ff;text-shadow:0 0 12px rgba(0,243,255,0.45);margin:0;text-align:center}
 .sub-bar{display:flex;gap:12px;align-items:center;font-size:0.73rem;color:#94a3b8;margin-top:3px;flex-wrap:wrap;justify-content:center}
-.dot{width:8px;height:8px;border-radius:50%;background:#00ff88;display:inline-block;box-shadow:0 0 8px #00ff88;margin-right:4px;animation:bDot 1s infinite}
+.dot{width:8px;height:8px;border-radius:50%;background:#ff2a5f;display:inline-block;box-shadow:0 0 8px #ff2a5f;margin-right:4px;animation:bDot 1s infinite}
 @keyframes bDot{0%,100%{opacity:1}50%{opacity:0.15}}
-.scada-grid{display:grid;grid-template-columns:1.32fr 1fr;gap:12px;width:100%;max-width:920px}
+.scada-grid{display:grid;grid-template-columns:1.32fr 1fr;gap:12px;width:100%;max-width:920px;transition:opacity 0.3s ease}
 @media(max-width:819px){.scada-grid{grid-template-columns:1fr}}
-.card{background:linear-gradient(160deg,#0c1322 0%,#050811 100%);border:1px solid #1e293b;border-radius:14px;padding:12px 15px;box-shadow:0 8px 25px rgba(0,0,0,0.8);display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.card{background:linear-gradient(160deg,#0c1322 0%,#050811 100%);border:1px solid #1e293b;border-radius:14px;padding:12px 15px;box-shadow:0 8px 25px rgba(0,0,0,0.8);display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;transition:border-color 0.3s ease}
 .card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:linear-gradient(to bottom,#00f3ff,#00ff88)}
+.card.offline-card{border-color:#33111c}
+.card.offline-card::before{background:linear-gradient(to bottom,#ff2a5f,#475569)}
 .card-hdr{display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:4px;flex-wrap:wrap;gap:4px}
 .label{font-size:0.68rem;text-transform:uppercase;letter-spacing:1.3px;color:#94a3b8;font-weight:600}
 .mimic-box{width:100%;height:220px;background:#03050a;border-radius:10px;border:1px solid #1e293b;position:relative;overflow:hidden}
@@ -25,7 +31,7 @@ h1{font-size:1.3rem;letter-spacing:2.5px;color:#00f3ff;text-shadow:0 0 12px rgba
 @keyframes wv2{0%{transform:translateX(-80px)}100%{transform:translateX(0)}}
 .telem-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:6px}
 .t-box{background:#000;border:1px solid #1e293b;border-radius:8px;padding:6px 9px;text-align:center}
-.metric{font-size:1.18rem;font-weight:bold;color:#00f3ff;margin-top:2px}
+.metric{font-size:1.18rem;font-weight:bold;color:#475569;margin-top:2px;transition:color 0.3s ease}
 .bar-bg{width:100%;height:5px;background:#1e293b;border-radius:3px;margin-top:4px;overflow:hidden}
 .bar-fill{height:100%;background:#00f3ff;width:0%;transition:width 0.4s ease}
 .status-wrap{display:flex;align-items:center;justify-content:space-between;width:100%;background:#000;padding:8px 12px;border-radius:10px;border:1px solid #1e293b;margin:6px 0}
@@ -35,7 +41,7 @@ h1{font-size:1.3rem;letter-spacing:2.5px;color:#00f3ff;text-shadow:0 0 12px rgba
 .b-wait{background:rgba(245,158,11,0.2);color:#ffb800;border:1px solid #ffb800;animation:bDot 1s infinite}
 .b-flt{background:rgba(255,42,95,0.25);color:#ff2a5f;border:1px solid #ff2a5f;animation:bDot 0.7s infinite}
 .btn-row{display:flex;gap:8px;width:100%}
-button{flex:1;padding:9px;border:none;border-radius:8px;font-weight:bold;font-size:0.75rem;cursor:pointer;letter-spacing:0.6px;transition:transform 0.12s}
+button{flex:1;padding:9px;border:none;border-radius:8px;font-weight:bold;font-size:0.75rem;cursor:pointer;letter-spacing:0.6px;transition:transform 0.12s,opacity 0.2s}
 button:active{transform:scale(0.97)}
 .btn-start{background:linear-gradient(90deg,#00f3ff,#00b8ff);color:#000}
 .btn-stop{background:#1e293b;color:#f1f5f9;border:1px solid #334155}
@@ -80,10 +86,17 @@ td{padding:6px 10px;border-top:1px solid #111a2e;color:#e2e8f0}
 .ftr{display:flex;gap:20px;margin-top:8px;justify-content:center}
 .lnk{color:#94a3b8;text-decoration:none;font-size:0.74rem;border-bottom:1px dashed #475569;padding-bottom:2px;cursor:pointer}
 </style></head><body>
+
 <div class="win-bg" id="tmrAlert"><div class="win-box" style="max-width:350px;border-color:#ff2a5f;text-align:center;padding:22px">
   <h2 style="color:#ff2a5f;margin:0 0 10px 0">&#9888; TIMER ENABLED!</h2>
   <p style="font-size:0.84rem;color:#e2e8f0;line-height:1.45;margin:0 0 18px 0">Automatic Timer Schedule is currently active.<br><br>Disable timer schedules in the <b>Timer Window</b> if you want to turn on the motor manually.</p>
   <button class="btn-start" onclick="closeWin('tmrAlert')">OK, UNDERSTOOD</button>
+</div></div>
+
+<div class="win-bg" id="offlineAlert"><div class="win-box" style="max-width:360px;border-color:#ff2a5f;text-align:center;padding:22px">
+  <h2 style="color:#ff2a5f;margin:0 0 10px 0">&#9888; CONTROLLER OFFLINE</h2>
+  <p style="font-size:0.84rem;color:#e2e8f0;line-height:1.45;margin:0 0 18px 0">The ESP32 SCADA controller is currently unreachable.<br><br>Please verify that the control panel has mains power and an active Wi-Fi/Internet connection.</p>
+  <button class="btn-start" onclick="closeWin('offlineAlert')">OK, UNDERSTOOD</button>
 </div></div>
 
 <div class="win-bg" id="remoteAlert"><div class="win-box" style="max-width:360px;border-color:#ffb800;text-align:center;padding:22px">
@@ -184,12 +197,12 @@ td{padding:6px 10px;border-top:1px solid #111a2e;color:#e2e8f0}
       <div class="cfg-item" style="border-color:#ffb800">
         <label style="color:#ffb800;font-weight:bold">Motor Auto-ON Low Water Distance (cm from Sensor)</label>
         <input type="number" step="0.5" id="cOnCm" value="65">
-        <button class="cap-btn" style="background:#1e293b;color:#ffb800;border:1px solid #ffb800" onclick="document.getElementById('cOnCm').value=liveDistVal">&#128207; Use Live Sensor cm for Motor ON</button>
+        <button class="cap-btn" style="background:#1e293b;color:#ffb800;border:1px solid #ffb800" onclick="if(liveDistVal>0)document.getElementById('cOnCm').value=liveDistVal">&#128207; Use Live Sensor cm for Motor ON</button>
       </div>
       <div class="cfg-item" style="border-color:#00ff88">
         <label style="color:#00ff88;font-weight:bold">Motor Auto-OFF Full Tank Distance (100% Full, Min 20cm)</label>
         <input type="number" step="0.5" id="cFull" min="20.0" value="20">
-        <button class="cap-btn" style="background:#1e293b;color:#00ff88;border:1px solid #00ff88" onclick="document.getElementById('cFull').value=Math.max(20.0,liveDistVal)">&#128207; Use Live Sensor cm for Motor OFF</button>
+        <button class="cap-btn" style="background:#1e293b;color:#00ff88;border:1px solid #00ff88" onclick="if(liveDistVal>0)document.getElementById('cFull').value=Math.max(20.0,liveDistVal)">&#128207; Use Live Sensor cm for Motor OFF</button>
       </div>
     </div>
     <button class="btn-start" style="padding:12px;margin-top:4px" onclick="saveCalib('sonarMsg','winSonar')">&#10004; SAVE TANK HEIGHT &amp; MOTOR ON/OFF DISTANCES</button>
@@ -224,16 +237,16 @@ td{padding:6px 10px;border-top:1px solid #111a2e;color:#e2e8f0}
 
 <div class="hdr"><h1>RIBIN'S HOME AUTOMATION</h1>
 <div class="sub-bar">
-  <span><i class="dot" id="netDot"></i>SYSTIME: <b id="sysTime" style="color:#00f3ff">--:--:--</b></span>
-  <span>TIMER: <b id="runTmr" style="color:#00ff88">00:00</b></span>
-  <span>FLOW: <b id="flowTxt" style="color:#00f3ff">0.0 L/m</b></span>
-  <span>ETA FULL: <b id="etaTxt" style="color:#ffb800">--:--</b></span>
+  <span><i class="dot" id="netDot"></i>SYSTIME: <b id="sysTime" style="color:#ff2a5f">CONNECTING...</b></span>
+  <span>TIMER: <b id="runTmr" style="color:#64748b">--:--</b></span>
+  <span>FLOW: <b id="flowTxt" style="color:#64748b">-- L/m</b></span>
+  <span>ETA FULL: <b id="etaTxt" style="color:#64748b">--:--</b></span>
 </div></div>
-<div class="scada-grid">
-  <div class="card">
+<div class="scada-grid" id="mainGrid">
+  <div class="card offline-card" id="cardLeft">
     <div class="card-hdr">
-      <span class="label">TANK (<span id="tankHInfo" style="color:#00ff88">H:80cm &bull; ON:65cm &bull; OFF:20cm</span>)</span>
-      <span id="dist" style="font-size:0.75rem;color:#00f3ff;font-weight:bold">Sensor: -- cm</span>
+      <span class="label">TANK (<span id="tankHInfo" style="color:#64748b">H:--cm &bull; ON:--cm &bull; OFF:--cm</span>)</span>
+      <span id="dist" style="font-size:0.75rem;color:#64748b;font-weight:bold">Sensor: OFFLINE</span>
     </div>
     <div class="mimic-box">
       <svg viewBox="0 0 360 220" width="100%" height="100%">
@@ -244,54 +257,54 @@ td{padding:6px 10px;border-top:1px solid #111a2e;color:#e2e8f0}
         <path d="M 10 172 L 45 172" fill="none" stroke="url(#pipeG)" stroke-width="12" stroke-linecap="round"/>
         <path d="M 75 155 L 145 155 L 145 16 L 260 16 L 260 30" fill="none" stroke="url(#pipeG)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
         <path id="pipeFlow" d="M 12 172 L 50 172 L 75 155 L 145 155 L 145 16 L 260 16 L 260 30" fill="none" stroke="#00f3ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" class="flow-off"/>
-        <circle cx="145" cy="60" r="7" fill="#000" stroke="#475569" stroke-width="2"/><circle id="valveLed" cx="145" cy="60" r="3.5" fill="#475569"/>
+        <circle cx="145" cy="60" r="7" fill="#000" stroke="#475569" stroke-width="2"/><circle id="valveLed" cx="145" cy="60" r="3.5" fill="#ff2a5f"/>
         <g transform="translate(32,126)">
-          <path d="M 8 56 L 52 56 L 58 64 L 2 64 Z" fill="#334155"/><rect x="4" y="4" width="52" height="52" rx="12" fill="#0b1120" stroke="#00f3ff" stroke-width="2"/>
+          <path d="M 8 56 L 52 56 L 58 64 L 2 64 Z" fill="#334155"/><rect id="pumpBox" x="4" y="4" width="52" height="52" rx="12" fill="#0b1120" stroke="#475569" stroke-width="2"/>
           <circle cx="30" cy="30" r="20" fill="#000" stroke="#334155" stroke-width="2"/>
           <g id="pumpImpeller" style="transform-origin:30px 30px"><path d="M30 12 L33 25 L46 22 L35 30 L46 38 L33 35 L30 48 L27 35 L14 38 L25 30 L14 22 L27 25 Z" fill="#94a3b8"/><circle cx="30" cy="30" r="6" fill="#00f3ff"/></g>
           <text x="30" y="76" fill="#94a3b8" font-size="8.5" text-anchor="middle" font-weight="bold">CENTRIFUGAL PUMP</text>
         </g>
-        <rect x="238" y="18" width="44" height="10" rx="3" fill="#334155" stroke="#00f3ff" stroke-width="1.5"/>
-        <rect x="212" y="26" width="96" height="158" rx="14" fill="#000" stroke="#00f3ff" stroke-width="3"/>
+        <rect x="238" y="18" width="44" height="10" rx="3" fill="#334155" stroke="#475569" stroke-width="1.5"/>
+        <rect id="tankOutline" x="212" y="26" width="96" height="158" rx="14" fill="#000" stroke="#475569" stroke-width="3"/>
         <g clip-path="url(#tClip)">
           <line id="inletStream" x1="260" y1="28" x2="260" y2="182" stroke="#00f3ff" stroke-width="4" class="stream-off"/>
           <g id="waterGrp" transform="translate(0,154)" style="transition:transform 0.5s ease">
-            <path id="wPath2" class="wave2" d="M 130 28 Q 150 22 170 28 T 210 28 T 250 28 T 290 28 T 330 28 T 370 28 T 410 28 L 410 200 L 130 200 Z" fill="#00f3ff" opacity="0.45"/>
-            <path id="wPath1" class="wave1" d="M 130 28 Q 150 34 170 28 T 210 28 T 250 28 T 290 28 T 330 28 T 370 28 T 410 28 L 410 200 L 130 200 Z" fill="#00f3ff" opacity="0.85"/>
+            <path id="wPath2" class="wave2" d="M 130 28 Q 150 22 170 28 T 210 28 T 250 28 T 290 28 T 330 28 T 370 28 T 410 28 L 410 200 L 130 200 Z" fill="#475569" opacity="0.45"/>
+            <path id="wPath1" class="wave1" d="M 130 28 Q 150 34 170 28 T 210 28 T 250 28 T 290 28 T 330 28 T 370 28 T 410 28 L 410 200 L 130 200 Z" fill="#475569" opacity="0.85"/>
           </g>
           <rect x="220" y="32" width="8" height="146" rx="4" fill="#fff" opacity="0.16"/>
         </g>
-        <line x1="296" y1="65" x2="306" y2="65" stroke="#00f3ff" stroke-width="1.5"/><text x="292" y="68" fill="#94a3b8" font-size="7" text-anchor="end">75%</text>
-        <line x1="294" y1="105" x2="306" y2="105" stroke="#00f3ff" stroke-width="2"/><text x="290" y="108" fill="#00f3ff" font-size="7.5" text-anchor="end" font-weight="bold">50%</text>
-        <line x1="296" y1="144" x2="306" y2="144" stroke="#00f3ff" stroke-width="1.5"/><text x="292" y="147" fill="#94a3b8" font-size="7" text-anchor="end">25%</text>
-        <rect x="225" y="190" width="70" height="18" rx="4" fill="#000" stroke="#1e293b"/>
-        <text id="svgPct" x="260" y="202" fill="#00f3ff" font-size="9.5" text-anchor="middle" font-weight="bold">--%</text>
+        <line x1="296" y1="65" x2="306" y2="65" stroke="#475569" stroke-width="1.5"/><text x="292" y="68" fill="#64748b" font-size="7" text-anchor="end">75%</text>
+        <line x1="294" y1="105" x2="306" y2="105" stroke="#475569" stroke-width="2"/><text x="290" y="108" fill="#64748b" font-size="7.5" text-anchor="end" font-weight="bold">50%</text>
+        <line x1="296" y1="144" x2="306" y2="144" stroke="#475569" stroke-width="1.5"/><text x="292" y="147" fill="#64748b" font-size="7" text-anchor="end">25%</text>
+        <rect x="222" y="190" width="76" height="18" rx="4" fill="#000" stroke="#1e293b"/>
+        <text id="svgPct" x="260" y="202" fill="#ff2a5f" font-size="9.5" text-anchor="middle" font-weight="bold">OFFLINE</text>
       </svg>
     </div>
     <div class="telem-row">
-      <div class="t-box"><span class="label" style="font-size:0.6rem">LAST FILL DURATION</span><div id="lastDur" style="font-size:0.8rem;font-weight:bold;color:#f1f5f9;margin-top:2px">00m 00s (--:--)</div></div>
-      <div class="t-box"><span class="label" style="font-size:0.6rem" id="sftSummary">DRY: 3M &bull; 40%/25M &bull; 45M</span><div id="dailyRun" style="font-size:0.84rem;font-weight:bold;color:#00ff88;margin-top:2px">Today: 0m 0s / 120m</div></div>
+      <div class="t-box"><span class="label" style="font-size:0.6rem">LAST FILL DURATION</span><div id="lastDur" style="font-size:0.8rem;font-weight:bold;color:#64748b;margin-top:2px">--m --s (--:--)</div></div>
+      <div class="t-box"><span class="label" style="font-size:0.6rem" id="sftSummary">DRY: --M &bull; --%/--M &bull; --M</span><div id="dailyRun" style="font-size:0.84rem;font-weight:bold;color:#64748b;margin-top:2px">Today: --m --s / 120m</div></div>
     </div>
   </div>
-  <div class="card">
-    <div><span class="label" id="vRangeLbl">LIVE TELEMETRY (SAFE: 100V - 270V)</span>
+  <div class="card offline-card" id="cardRight">
+    <div><span class="label" id="vRangeLbl">LIVE TELEMETRY (WAITING FOR CONTROLLER...)</span>
       <div class="telem-row">
         <div class="t-box"><span class="label" style="font-size:0.6rem">MAINS VOLTAGE</span><div class="metric" id="volt">-- V</div><div class="bar-bg"><div id="vBar" class="bar-fill"></div></div></div>
         <div class="t-box"><span class="label" style="font-size:0.6rem">TANK CAPACITY</span><div class="metric" id="lvl">--%</div><div class="bar-bg"><div id="lBar" class="bar-fill"></div></div></div>
       </div>
     </div>
     <div style="width:100%">
-      <div class="status-wrap"><span class="label" style="width:auto">MOTOR MATRIX</span><span id="stat" class="badge b-stdby">STANDBY</span></div>
+      <div class="status-wrap"><span class="label" style="width:auto">MOTOR MATRIX</span><span id="stat" class="badge b-flt">DEVICE OFFLINE</span></div>
       <div class="btn-row"><button class="btn-stop" onclick="setPump(0)">STOP PUMP</button><button class="btn-start" onclick="setPump(1)">START PUMP</button></div>
       <div class="btn-row"><button class="btn-rst" onclick="resetSystem()">RESET FAULT</button><button class="btn-rbt" onclick="rebootSystem()">RESTART SYSTEM</button></div>
     </div>
     <div class="ctrl-box">
-      <div style="display:flex;justify-content:space-between;align-items:center"><span class="label" style="font-size:0.65rem">TFT BACKLIGHT DIMMER</span><span id="blValText" style="font-size:0.75rem;color:#00f3ff;font-weight:bold">25%</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center"><span class="label" style="font-size:0.65rem">TFT BACKLIGHT DIMMER</span><span id="blValText" style="font-size:0.75rem;color:#64748b;font-weight:bold">--%</span></div>
       <input type="range" id="blSlider" min="0" max="255" value="64" oninput="updateBlLive(this.value)" onchange="setBacklight(this.value)">
     </div>
     <div style="width:100%;margin-top:2px">
       <div class="btn-row">
-        <button class="btn-win" onclick="openWin('winTimers')">&#9200; TIMERS &amp; SOLAR</button>
+        <button class="btn-win" onclick="openTimersWin()">&#9200; TIMERS &amp; SOLAR</button>
         <button class="btn-win" onclick="openHistoryWindow()">&#128203; 30 DAYS HISTORY</button>
       </div>
       <div class="btn-row">
@@ -309,8 +322,11 @@ td{padding:6px 10px;border-top:1px solid #111a2e;color:#e2e8f0}
 const dNames=['SUN','MON','TUE','WED','THU','FRI','SAT'];
 const fltNames=['NONE','LOW VOLTAGE CUTOFF','HIGH VOLTAGE CUTOFF','STAGE-1 FILL TIMEOUT','STAGE-2 MAX TIME CUTOFF','DAILY 2H MAX LIMIT','SENSOR COVERED / NO ECHO','DRY-RUN / NO FLOW'];
 const PASS_TIMEOUT_MS=10*60*1000;
+const OFFLINE_TIMEOUT_MS=5500;
+
 let initSync=false,anyTmrOn=false,sonarCalibOpen=false,vMinCfg=100,vMaxCfg=270,liveDistVal=0,histCache=[],fltCache=[],histMode=0,pendingWin=0,lastCfgObj=null;
 let authUnlockUntil=0;
+let systemOnline=false,lastPacketMs=0,mqttScriptLoaded=false,mqttConnecting=false;
 let tmrState=[{en:false,d:127,st:'06:00',et:'07:00'},{en:false,d:127,st:'12:00',et:'13:00'},{en:false,d:127,st:'18:00',et:'19:00'}];
 
 // --- HYBRID LOCAL HTTP + GLOBAL CLOUD WEBSOCKET ENGINE ---
@@ -321,8 +337,57 @@ const TOPIC_HIST  = 'ribin/scada/hL7OLzsN/hist';
 const TOPIC_FLT   = 'ribin/scada/hL7OLzsN/flt';
 const TOPIC_CMD   = 'ribin/scada/hL7OLzsN/cmd';
 
+function setOfflineUI(){
+  systemOnline=false;
+  liveDistVal=0;
+  let dot=document.getElementById('netDot');
+  dot.style.background='#ff2a5f';
+  dot.style.boxShadow='0 0 8px #ff2a5f';
+  let stTime=document.getElementById('sysTime');
+  stTime.innerText='SYSTEM OFFLINE';
+  stTime.style.color='#ff2a5f';
+
+  document.getElementById('runTmr').innerText='--:--';
+  document.getElementById('runTmr').style.color='#64748b';
+  document.getElementById('flowTxt').innerText='-- L/m';
+  document.getElementById('flowTxt').style.color='#64748b';
+  document.getElementById('etaTxt').innerText='--:--';
+  document.getElementById('etaTxt').style.color='#64748b';
+
+  document.getElementById('dist').innerText='Sensor: OFFLINE';
+  document.getElementById('dist').style.color='#ff2a5f';
+  document.getElementById('lvl').innerText='--%';
+  document.getElementById('lvl').style.color='#475569';
+  document.getElementById('volt').innerText='-- V';
+  document.getElementById('volt').style.color='#475569';
+  document.getElementById('svgPct').textContent='OFFLINE';
+  document.getElementById('svgPct').setAttribute('fill','#ff2a5f');
+  document.getElementById('calLiveCm').innerText='OFFLINE';
+  document.getElementById('calLivePct').innerText='--%';
+
+  document.getElementById('lBar').style.width='0%';
+  document.getElementById('vBar').style.width='0%';
+  document.getElementById('waterGrp').setAttribute('transform','translate(0,154)');
+  document.getElementById('wPath1').setAttribute('fill','#475569');
+  document.getElementById('wPath2').setAttribute('fill','#475569');
+  document.getElementById('tankOutline').setAttribute('stroke','#475569');
+  document.getElementById('pumpBox').setAttribute('stroke','#475569');
+
+  document.getElementById('pumpImpeller').classList.remove('spinning');
+  document.getElementById('pipeFlow').setAttribute('class','flow-off');
+  document.getElementById('inletStream').setAttribute('class','stream-off');
+  document.getElementById('valveLed').setAttribute('fill','#ff2a5f');
+
+  let st=document.getElementById('stat');
+  st.className='badge b-flt';
+  st.innerText='DEVICE OFFLINE';
+
+  document.getElementById('cardLeft').classList.add('offline-card');
+  document.getElementById('cardRight').classList.add('offline-card');
+}
+
 function handleRemoteLink(localPath, msg){
-  if(isLocalEsp && !cloudModeActive){
+  if(isLocalEsp && !cloudModeActive && systemOnline){
     window.location.href = localPath;
   } else {
     document.getElementById('remoteAlertTxt').innerHTML = msg + '<br><br>When connected to your home Wi-Fi, open your ESP32 local IP address in Chrome to access this page.';
@@ -332,50 +397,97 @@ function handleRemoteLink(localPath, msg){
 
 function sendApiCmd(urlPath){
   if(!cloudModeActive){
-    return fetch(urlPath).then(r=>r.text()).catch(()=>{startCloudEngine();return 'OK';});
+    return fetch(urlPath).then(r=>{
+      if(!r.ok) throw new Error('HTTP_ERR');
+      return r.text();
+    }).catch(()=>{
+      startCloudEngine();
+      return 'ERR';
+    });
   }else{
     if(mqttClient && mqttClient.isConnected()){
       let m = new Paho.MQTT.Message(urlPath);
       m.destinationName = TOPIC_CMD;
       mqttClient.send(m);
+      return Promise.resolve('OK');
     }
-    return Promise.resolve('OK');
+    return Promise.resolve('OFFLINE');
   }
 }
 
+function connectMqttClient(){
+  if(mqttConnecting || (mqttClient && mqttClient.isConnected())) return;
+  if(typeof Paho === 'undefined' || !Paho.MQTT) return;
+  mqttConnecting = true;
+  let cid = 'ribin_mob_' + Math.random().toString(16).substr(2, 8);
+  mqttClient = new Paho.MQTT.Client('broker.emqx.io', 8084, '/mqtt', cid);
+  mqttClient.onConnectionLost = ()=>{
+    mqttConnecting = false;
+    setTimeout(()=>{mqttClient=null;connectMqttClient();}, 3000);
+  };
+  mqttClient.onMessageArrived = (msg)=>{
+    try {
+      if(msg.destinationName === TOPIC_TELEM){
+        let d = JSON.parse(msg.payloadString);
+        renderTelem(d);
+      }
+      else if(msg.destinationName === TOPIC_HIST) renderHistory(JSON.parse(msg.payloadString));
+      else if(msg.destinationName === TOPIC_FLT) renderFaults(JSON.parse(msg.payloadString));
+    } catch(e){}
+  };
+  mqttClient.connect({
+    useSSL: true,
+    timeout: 8,
+    keepAliveInterval: 15,
+    onSuccess: ()=>{
+      mqttConnecting = false;
+      mqttClient.subscribe(TOPIC_TELEM);
+      mqttClient.subscribe(TOPIC_HIST);
+      mqttClient.subscribe(TOPIC_FLT);
+      sendApiCmd('/sync_all');
+    },
+    onFailure: ()=>{
+      mqttConnecting = false;
+      setTimeout(()=>{mqttClient=null;connectMqttClient();}, 3500);
+    }
+  });
+}
+
 function startCloudEngine(){
-  if(mqttClient) return;
   cloudModeActive = true;
+  if(mqttScriptLoaded){
+    connectMqttClient();
+    return;
+  }
+  mqttScriptLoaded = true;
   let s = document.createElement('script');
   s.src = 'https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js';
-  s.onload = ()=>{
-    let cid = 'ribin_mob_' + Math.random().toString(16).substr(2, 8);
-    mqttClient = new Paho.MQTT.Client('broker.emqx.io', 8084, '/mqtt', cid);
-    mqttClient.onConnectionLost = ()=>{ setTimeout(()=>{mqttClient=null;startCloudEngine();}, 3000); };
-    mqttClient.onMessageArrived = (msg)=>{
-      try {
-        if(msg.destinationName === TOPIC_TELEM) renderTelem(JSON.parse(msg.payloadString));
-        else if(msg.destinationName === TOPIC_HIST) renderHistory(JSON.parse(msg.payloadString));
-        else if(msg.destinationName === TOPIC_FLT) renderFaults(JSON.parse(msg.payloadString));
-      } catch(e){}
-    };
-    mqttClient.connect({
-      useSSL: true,
-      timeout: 10,
-      onSuccess: ()=>{
-        mqttClient.subscribe(TOPIC_TELEM);
-        mqttClient.subscribe(TOPIC_HIST);
-        mqttClient.subscribe(TOPIC_FLT);
-        sendApiCmd('/sync_all');
-      }
-    });
-  };
+  s.onload = ()=>connectMqttClient();
+  s.onerror = ()=>{mqttScriptLoaded = false; setTimeout(startCloudEngine, 4000);};
   document.head.appendChild(s);
 }
+
 if(!isLocalEsp) startCloudEngine();
+
+document.addEventListener('visibilitychange', ()=>{
+  if(!document.hidden){
+    if(cloudModeActive){
+      if(!mqttClient || !mqttClient.isConnected()) connectMqttClient();
+      else sendApiCmd('/sync_all');
+    } else {
+      fetchData();
+    }
+  }
+});
 
 function openWin(id){document.getElementById(id).style.display='flex';}
 function closeWin(id){document.getElementById(id).style.display='none';}
+
+function openTimersWin(){
+  if(!systemOnline){openWin('offlineAlert');return;}
+  openWin('winTimers');
+}
+
 function populateCfgFields(c){
   if(!c)return;
   document.getElementById('cEmpty').value=c.te;
@@ -397,6 +509,7 @@ function launchProtectedWin(target){
   else{sonarCalibOpen=true;sendApiCmd('/calib_mode?en=1&pw=12345678');openWin('winSafety');}
 }
 function reqProtectedWin(target){
+  if(!systemOnline){openWin('offlineAlert');return;}
   pendingWin=target;
   if(Date.now()<authUnlockUntil){
     launchProtectedWin(target);
@@ -433,6 +546,7 @@ function closeSafetyWin(){
   closeWin('winSafety');
 }
 function captureTankHeightNow(){
+  if(!systemOnline){openWin('offlineAlert');return;}
   if(liveDistVal<25){alert('Point the sensor at the tank bottom (>= 25 cm away) to capture Tank Total Height.');return;}
   document.getElementById('cEmpty').value=liveDistVal;
   if(parseFloat(document.getElementById('cOnCm').value)>=liveDistVal){
@@ -515,6 +629,7 @@ function saveSolar(){
   sendApiCmd(`/solar?en=${en}&st=${st}&sp=${sp}&trg=${trg}`);
 }
 function saveCalib(msgId,winId){
+  if(!systemOnline){openWin('offlineAlert');return;}
   let q=`/config?pw=12345678&te=${document.getElementById('cEmpty').value}&onC=${document.getElementById('cOnCm').value}&tf=${document.getElementById('cFull').value}&lit=${document.getElementById('cLiters').value}&drM=${document.getElementById('cDryM').value}&drP=${document.getElementById('cDryP').value}&clS=${document.getElementById('cCoolS').value}&c1P=${document.getElementById('cChkP').value}&c1M=${document.getElementById('cChkM').value}&c2M=${document.getElementById('cMaxM').value}&vMin=${document.getElementById('cVmin').value}&vMax=${document.getElementById('cVmax').value}`;
   sendApiCmd(q).then(()=>{
     initSync=false;
@@ -526,33 +641,76 @@ function saveCalib(msgId,winId){
   });
 }
 function fmtMMSS(s){let m=Math.floor(s/60),sec=s%60;return (m<10?'0'+m:m)+':'+(sec<10?'0'+sec:sec);}
+
 function renderTelem(d){
-  liveDistVal=d.dist;
+  if(!d || typeof d.p === 'undefined') return;
+  lastPacketMs = Date.now();
+  systemOnline = true;
+  liveDistVal = d.dist;
+
+  document.getElementById('cardLeft').classList.remove('offline-card');
+  document.getElementById('cardRight').classList.remove('offline-card');
+  document.getElementById('tankOutline').setAttribute('stroke','#00f3ff');
+  document.getElementById('pumpBox').setAttribute('stroke','#00f3ff');
+
   let curL=d.cfg?Math.round((d.p*d.cfg.lit)/100):0;
-  document.getElementById('lvl').innerText=d.p+'% ('+curL+'L)';
-  document.getElementById('svgPct').textContent=d.p+'% • '+curL+'L';
+  let lvlEl=document.getElementById('lvl');
+  lvlEl.innerText=d.p+'% ('+curL+'L)';
+  lvlEl.style.color='#00f3ff';
+
+  let svgPctEl=document.getElementById('svgPct');
+  svgPctEl.textContent=d.p+'% • '+curL+'L';
+  svgPctEl.setAttribute('fill','#00f3ff');
+
   let distStr=d.maxR?'MAX REACHED (<20cm)':(d.dist+' cm');
-  document.getElementById('dist').innerText='Sensor: '+distStr;
+  let distEl=document.getElementById('dist');
+  distEl.innerText='Sensor: '+distStr;
+  distEl.style.color='#00f3ff';
+
   document.getElementById('volt').innerText=d.vText;
   document.getElementById('calLiveCm').innerText=distStr;
   document.getElementById('calLivePct').innerText=d.p+'% ('+curL+'L)';
-  document.getElementById('sysTime').innerText=d.time+(cloudModeActive?' (CLOUD)':'');
-  document.getElementById('runTmr').innerText=fmtMMSS(d.fillS);
-  document.getElementById('flowTxt').innerText=d.pump?(d.flL>0?(d.flL.toFixed(1)+' L/m ('+d.flP.toFixed(1)+'%/m)'):'CALC...'):'0.0 L/m';
-  document.getElementById('etaTxt').innerText=d.pump?(d.eta>=0?fmtMMSS(d.eta):'CALC...'):'--:--';
+
+  let stTime=document.getElementById('sysTime');
+  stTime.innerText=d.time+(cloudModeActive?' (CLOUD)':' (LOCAL)');
+  stTime.style.color='#00f3ff';
+
+  let rTmr=document.getElementById('runTmr');
+  rTmr.innerText=fmtMMSS(d.fillS);
+  rTmr.style.color='#00ff88';
+
+  let flEl=document.getElementById('flowTxt');
+  flEl.innerText=d.pump?(d.flL>0?(d.flL.toFixed(1)+' L/m ('+d.flP.toFixed(1)+'%/m)'):'CALC...'):'0.0 L/m';
+  flEl.style.color='#00f3ff';
+
+  let etaEl=document.getElementById('etaTxt');
+  etaEl.innerText=d.pump?(d.eta>=0?fmtMMSS(d.eta):'CALC...'):'--:--';
+  etaEl.style.color='#ffb800';
+
   let lm=Math.floor(d.lastS/60),ls=d.lastS%60;
-  document.getElementById('lastDur').innerText=(lm<10?'0'+lm:lm)+'m '+(ls<10?'0'+ls:ls)+'s '+(d.stamp||'');
+  let lDur=document.getElementById('lastDur');
+  lDur.innerText=(lm<10?'0'+lm:lm)+'m '+(ls<10?'0'+ls:ls)+'s '+(d.stamp||'');
+  lDur.style.color='#f1f5f9';
+
   let dm=Math.floor(d.dayS/60),ds=d.dayS%60;
-  document.getElementById('dailyRun').innerText=`Today: ${dm}m ${ds}s / 120m`;
+  let dRun=document.getElementById('dailyRun');
+  dRun.innerText=`Today: ${dm}m ${ds}s / 120m`;
+  dRun.style.color='#00ff88';
+
   anyTmrOn=d.anyTmr;
   let dot=document.getElementById('netDot');
-  if(d.time==='OFFLINE'){dot.style.background='#ff2a5f';dot.style.boxShadow='0 0 8px #ff2a5f';}else{dot.style.background='#00ff88';dot.style.boxShadow='0 0 8px #00ff88';}
+  dot.style.background='#00ff88';
+  dot.style.boxShadow='0 0 8px #00ff88';
+
   if(d.cfg){
     lastCfgObj=d.cfg;
     vMinCfg=d.cfg.vMin;vMaxCfg=d.cfg.vMax;
-    document.getElementById('tankHInfo').innerText=`H:${d.cfg.te}cm • ON:${d.cfg.onC}cm • OFF:${d.cfg.tf}cm`;
+    let thInfo=document.getElementById('tankHInfo');
+    thInfo.innerText=`H:${d.cfg.te}cm • ON:${d.cfg.onC}cm • OFF:${d.cfg.tf}cm`;
+    thInfo.style.color='#00ff88';
     document.getElementById('vRangeLbl').innerText=`LIVE TELEMETRY (SAFE: ${d.cfg.vMin}V - ${d.cfg.vMax}V)`;
     document.getElementById('sftSummary').innerText=`DRY:${d.cfg.drM}M • ${d.cfg.c1P}%/${d.cfg.c1M}M • ${d.cfg.c2M}M`;
+    document.getElementById('blValText').style.color='#00f3ff';
     if(!initSync){
       initSync=true;document.getElementById('blSlider').value=d.bl;
       document.getElementById('blValText').innerText=Math.round((d.bl/255)*100)+'%';
@@ -582,15 +740,17 @@ function renderTelem(d){
   else if(d.maxR){st.className='badge b-run';st.innerText='MAX LEVEL REACHED (<20CM)';vl.setAttribute('fill','#00ff88');}
   else{st.className='badge b-stdby';st.innerText=anyTmrOn?'TIMER STANDBY':(d.cfg&&d.cfg.sEn?'SOLAR-SYNC STANDBY':'STANDBY');vl.setAttribute('fill','#475569');}
 }
+
 function fetchData(){
   if(cloudModeActive) return;
   fetch('/data?cal='+(sonarCalibOpen?1:0)).then(r=>r.json()).then(d=>{
     lastLocalOkMs = Date.now();
     renderTelem(d);
   }).catch(()=>{
-    if(Date.now() - lastLocalOkMs > 3500) startCloudEngine();
+    if(Date.now() - lastLocalOkMs > 3000) startCloudEngine();
   });
 }
+
 function selectBar(idx){
   if(!histCache[idx])return;
   for(let i=0;i<30;i++){
@@ -602,6 +762,7 @@ function selectBar(idx){
   document.getElementById('selBarTxt').innerHTML=`DATE: <b style="color:#fff">${dStr}${idx===29?' (Today)':''}</b> &bull; RUN: <b style="color:#00ff88">${m}m ${s}s</b> &bull; CYCLES: <b style="color:#ffe000">${x.c}</b>`;
 }
 function renderHistory(arr){
+  if(!Array.isArray(arr)) return;
   histCache=arr;
   let maxS=60,totS=0,bHtml='',tHtml='';
   arr.forEach(x=>{if(x.s>maxS)maxS=x.s;totS+=x.s;});
@@ -627,6 +788,7 @@ function fetchHistory(){
   fetch('/history').then(r=>r.json()).then(renderHistory).catch(()=>{});
 }
 function renderFaults(arr){
+  if(!Array.isArray(arr)) return;
   fltCache=arr;
   let fHtml='',cnt=0;
   arr.forEach((f,i)=>{
@@ -644,16 +806,26 @@ function fetchFaultLog(){
   if(cloudModeActive){sendApiCmd('/sync_all');return;}
   fetch('/faultlog').then(r=>r.json()).then(renderFaults).catch(()=>{});
 }
+
+// --- MASTER 500ms POLLING & HEARTBEAT WATCHDOG LOOP ---
 setInterval(()=>{
+  if(lastPacketMs > 0 && (Date.now() - lastPacketMs > OFFLINE_TIMEOUT_MS)){
+    if(systemOnline) setOfflineUI();
+  }
   if(!cloudModeActive){
     fetchData();
     if(document.getElementById('winHistory').style.display==='flex')fetchHistory();
-  }else if(sonarCalibOpen){
+  }else if(sonarCalibOpen && systemOnline){
     sendApiCmd('/calib_mode?en=1&pw=12345678');
   }
 },500);
+
+// Initial startup state
+setOfflineUI();
 fetchData();fetchHistory();fetchFaultLog();
+
 function setPump(s){
+  if(!systemOnline){openWin('offlineAlert');return;}
   if(s===1&&anyTmrOn){openWin('tmrAlert');return;}
   sendApiCmd('/control?state='+s).then(t=>{
     if(t==='TIMER_LOCK')openWin('tmrAlert');
@@ -661,8 +833,23 @@ function setPump(s){
     setTimeout(fetchHistory,250);
   });
 }
-function resetSystem(){sendApiCmd('/reset').then(()=>{fetchData();fetchHistory();fetchFaultLog();});}
-function rebootSystem(){if(confirm('Restart Smart Pump Controller now?')){let st=document.getElementById('stat');st.className='badge b-flt';st.innerText='REBOOTING...';sendApiCmd('/reboot');setTimeout(()=>location.reload(),12000);}}
+function resetSystem(){
+  if(!systemOnline){openWin('offlineAlert');return;}
+  sendApiCmd('/reset').then(()=>{fetchData();fetchHistory();fetchFaultLog();});
+}
+function rebootSystem(){
+  if(!systemOnline){openWin('offlineAlert');return;}
+  if(confirm('Restart Smart Pump Controller now?')){
+    let st=document.getElementById('stat');
+    st.className='badge b-flt';
+    st.innerText='REBOOTING...';
+    sendApiCmd('/reboot');
+    setTimeout(()=>{setOfflineUI();},1500);
+  }
+}
 function updateBlLive(v){document.getElementById('blValText').innerText=Math.round((v/255)*100)+'%';}
-function setBacklight(v){sendApiCmd('/backlight?val='+v);}
+function setBacklight(v){
+  if(!systemOnline){openWin('offlineAlert');return;}
+  sendApiCmd('/backlight?val='+v);
+}
 </script></body></html>
