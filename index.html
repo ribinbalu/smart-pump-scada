@@ -51,6 +51,7 @@ button:active{transform:scale(0.97)}
 .btn-win:hover{background:#00f3ff;color:#000}
 .ctrl-box{width:100%;background:#000;padding:7px 10px;border-radius:8px;border:1px solid #1e293b;margin-top:6px}
 .ctrl-box input[type=range]{width:100%;accent-color:#00f3ff;cursor:pointer;margin:4px 0 0 0}
+.ctrl-box input[type=range]:disabled{opacity:0.35;cursor:not-allowed}
 .win-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:900;padding:8px;backdrop-filter:blur(4px)}
 .win-box{background:linear-gradient(160deg,#0c1322,#050811);border:2px solid #00f3ff;border-radius:16px;width:100%;max-width:760px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 0 40px rgba(0,243,255,0.3)}
 .win-hdr{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#03060c;border-bottom:1px solid #1e293b;gap:6px;flex-wrap:wrap}
@@ -237,7 +238,7 @@ td{padding:6px 10px;border-top:1px solid #111a2e;color:#e2e8f0}
 
 <div class="hdr"><h1>RIBIN'S HOME AUTOMATION</h1>
 <div class="sub-bar">
-  <span><i class="dot" id="netDot"></i>SYSTIME: <b id="sysTime" style="color:#ff2a5f">CONNECTING...</b></span>
+  <span><i class="dot" id="netDot"></i>SYSTIME: <b id="sysTime" style="color:#ff2a5f">SYSTEM OFFLINE</b></span>
   <span>TIMER: <b id="runTmr" style="color:#64748b">--:--</b></span>
   <span>FLOW: <b id="flowTxt" style="color:#64748b">-- L/m</b></span>
   <span>ETA FULL: <b id="etaTxt" style="color:#64748b">--:--</b></span>
@@ -246,7 +247,7 @@ td{padding:6px 10px;border-top:1px solid #111a2e;color:#e2e8f0}
   <div class="card offline-card" id="cardLeft">
     <div class="card-hdr">
       <span class="label">TANK (<span id="tankHInfo" style="color:#64748b">H:--cm &bull; ON:--cm &bull; OFF:--cm</span>)</span>
-      <span id="dist" style="font-size:0.75rem;color:#64748b;font-weight:bold">Sensor: OFFLINE</span>
+      <span id="dist" style="font-size:0.75rem;color:#ff2a5f;font-weight:bold">Sensor: OFFLINE</span>
     </div>
     <div class="mimic-box">
       <svg viewBox="0 0 360 220" width="100%" height="100%">
@@ -287,7 +288,7 @@ td{padding:6px 10px;border-top:1px solid #111a2e;color:#e2e8f0}
     </div>
   </div>
   <div class="card offline-card" id="cardRight">
-    <div><span class="label" id="vRangeLbl">LIVE TELEMETRY (WAITING FOR CONTROLLER...)</span>
+    <div><span class="label" id="vRangeLbl">LIVE TELEMETRY (CONTROLLER OFFLINE)</span>
       <div class="telem-row">
         <div class="t-box"><span class="label" style="font-size:0.6rem">MAINS VOLTAGE</span><div class="metric" id="volt">-- V</div><div class="bar-bg"><div id="vBar" class="bar-fill"></div></div></div>
         <div class="t-box"><span class="label" style="font-size:0.6rem">TANK CAPACITY</span><div class="metric" id="lvl">--%</div><div class="bar-bg"><div id="lBar" class="bar-fill"></div></div></div>
@@ -300,7 +301,7 @@ td{padding:6px 10px;border-top:1px solid #111a2e;color:#e2e8f0}
     </div>
     <div class="ctrl-box">
       <div style="display:flex;justify-content:space-between;align-items:center"><span class="label" style="font-size:0.65rem">TFT BACKLIGHT DIMMER</span><span id="blValText" style="font-size:0.75rem;color:#64748b;font-weight:bold">--%</span></div>
-      <input type="range" id="blSlider" min="0" max="255" value="64" oninput="updateBlLive(this.value)" onchange="setBacklight(this.value)">
+      <input type="range" id="blSlider" min="0" max="255" value="0" disabled oninput="updateBlLive(this.value)" onchange="setBacklight(this.value)">
     </div>
     <div style="width:100%;margin-top:2px">
       <div class="btn-row">
@@ -322,7 +323,7 @@ td{padding:6px 10px;border-top:1px solid #111a2e;color:#e2e8f0}
 const dNames=['SUN','MON','TUE','WED','THU','FRI','SAT'];
 const fltNames=['NONE','LOW VOLTAGE CUTOFF','HIGH VOLTAGE CUTOFF','STAGE-1 FILL TIMEOUT','STAGE-2 MAX TIME CUTOFF','DAILY 2H MAX LIMIT','SENSOR COVERED / NO ECHO','DRY-RUN / NO FLOW'];
 const PASS_TIMEOUT_MS=10*60*1000;
-const OFFLINE_TIMEOUT_MS=5500;
+const OFFLINE_TIMEOUT_MS=5000;
 
 let initSync=false,anyTmrOn=false,sonarCalibOpen=false,vMinCfg=100,vMaxCfg=270,liveDistVal=0,histCache=[],fltCache=[],histMode=0,pendingWin=0,lastCfgObj=null;
 let authUnlockUntil=0;
@@ -339,10 +340,13 @@ const TOPIC_CMD   = 'ribin/scada/hL7OLzsN/cmd';
 
 function setOfflineUI(){
   systemOnline=false;
+  initSync=false;
   liveDistVal=0;
+
   let dot=document.getElementById('netDot');
   dot.style.background='#ff2a5f';
   dot.style.boxShadow='0 0 8px #ff2a5f';
+
   let stTime=document.getElementById('sysTime');
   stTime.innerText='SYSTEM OFFLINE';
   stTime.style.color='#ff2a5f';
@@ -354,8 +358,26 @@ function setOfflineUI(){
   document.getElementById('etaTxt').innerText='--:--';
   document.getElementById('etaTxt').style.color='#64748b';
 
+  // Clear ALL Tank & Telemetry labels completely
+  let thInfo=document.getElementById('tankHInfo');
+  thInfo.innerHTML='H:--cm &bull; ON:--cm &bull; OFF:--cm';
+  thInfo.style.color='#64748b';
+
   document.getElementById('dist').innerText='Sensor: OFFLINE';
   document.getElementById('dist').style.color='#ff2a5f';
+
+  let lDur=document.getElementById('lastDur');
+  lDur.innerText='--m --s (--:--)';
+  lDur.style.color='#64748b';
+
+  document.getElementById('sftSummary').innerHTML='DRY: --M &bull; --%/--M &bull; --M';
+
+  let dRun=document.getElementById('dailyRun');
+  dRun.innerText='Today: --m --s / 120m';
+  dRun.style.color='#64748b';
+
+  document.getElementById('vRangeLbl').innerText='LIVE TELEMETRY (CONTROLLER OFFLINE)';
+
   document.getElementById('lvl').innerText='--%';
   document.getElementById('lvl').style.color='#475569';
   document.getElementById('volt').innerText='-- V';
@@ -364,6 +386,13 @@ function setOfflineUI(){
   document.getElementById('svgPct').setAttribute('fill','#ff2a5f');
   document.getElementById('calLiveCm').innerText='OFFLINE';
   document.getElementById('calLivePct').innerText='--%';
+
+  let blTxt=document.getElementById('blValText');
+  blTxt.innerText='--%';
+  blTxt.style.color='#64748b';
+  let blSl=document.getElementById('blSlider');
+  blSl.value=0;
+  blSl.disabled=true;
 
   document.getElementById('lBar').style.width='0%';
   document.getElementById('vBar').style.width='0%';
@@ -428,6 +457,8 @@ function connectMqttClient(){
   mqttClient.onMessageArrived = (msg)=>{
     try {
       if(msg.destinationName === TOPIC_TELEM){
+        // Ignore stale broker-cached retained messages so an offline ESP32 never flashes old numbers
+        if(msg.retained) return;
         let d = JSON.parse(msg.payloadString);
         renderTelem(d);
       }
@@ -652,6 +683,7 @@ function renderTelem(d){
   document.getElementById('cardRight').classList.remove('offline-card');
   document.getElementById('tankOutline').setAttribute('stroke','#00f3ff');
   document.getElementById('pumpBox').setAttribute('stroke','#00f3ff');
+  document.getElementById('blSlider').disabled=false;
 
   let curL=d.cfg?Math.round((d.p*d.cfg.lit)/100):0;
   let lvlEl=document.getElementById('lvl');
