@@ -231,6 +231,19 @@ td{padding:6px 10px;border-top:1px solid #111a2e;color:#e2e8f0}
       <div class="cfg-item"><label>Under-Voltage Cutoff (V)</label><input type="number" id="cVmin" value="100"></div>
       <div class="cfg-item"><label>Over-Voltage Cutoff (V)</label><input type="number" id="cVmax" value="270"></div>
     </div>
+    <span class="label" style="color:#ffb800">4. Software Mains Voltage Calibration (True RMS Match)</span>
+    <div class="cfg-item" style="border-color:#ffb800;background:#090702">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:0.74rem;flex-wrap:wrap;gap:4px">
+        <span>LIVE READING: <b id="calLiveV" style="color:#00f3ff;font-size:0.92rem">-- V</b></span>
+        <span>CALIB FACTOR: <b id="calCurFactor" style="color:#00ff88">2.450</b></span>
+      </div>
+      <label style="color:#ffb800;font-weight:bold">Enter Actual Multimeter Voltage (V AC) to Calibrate</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="number" step="1" min="80" max="300" id="cRealV" placeholder="e.g. 230" style="flex:1">
+        <button class="cap-btn" style="margin-top:0;flex:1.2;background:linear-gradient(90deg,#ffb800,#00ff88)" onclick="calibrateVoltageNow()">&#9889; CALIBRATE VOLTAGE</button>
+      </div>
+      <div id="vCalMsg" style="font-size:0.74rem;color:#00ff88;text-align:center;display:none;margin-top:6px;font-weight:bold">Voltage Calibrated &amp; Saved to Flash!</div>
+    </div>
     <button class="btn-start" style="padding:12px;margin-top:4px" onclick="saveCalib('sftMsg','winSafety')">&#10004; SAVE INDUSTRIAL SAFETY LIMITS</button>
     <div id="sftMsg" style="font-size:0.78rem;color:#00ff88;text-align:center;display:none">Industrial Safety Settings Saved!</div>
   </div>
@@ -319,8 +332,7 @@ td{padding:6px 10px;border-top:1px solid #111a2e;color:#e2e8f0}
   <a class="lnk" onclick="handleRemoteLink('/wifi','Wi-Fi Setup requires a direct local Home Wi-Fi connection to the ESP32!')">Wi-Fi Network Setup &rarr;</a>
   <a class="lnk" onclick="handleRemoteLink('/update','Wireless Firmware OTA requires a direct local Home Wi-Fi connection to the ESP32!')">Wireless Firmware OTA &rarr;</a>
 </div>
-<script>
-const dNames=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+<script>const dNames=['SUN','MON','TUE','WED','THU','FRI','SAT'];
 const fltNames=['NONE','LOW VOLTAGE CUTOFF','HIGH VOLTAGE CUTOFF','STAGE-1 FILL TIMEOUT','STAGE-2 MAX TIME CUTOFF','DAILY 2H MAX LIMIT','SENSOR COVERED / NO ECHO','DRY-RUN / NO FLOW'];
 const PASS_TIMEOUT_MS=10*60*1000;
 const OFFLINE_TIMEOUT_MS=5000;
@@ -358,7 +370,6 @@ function setOfflineUI(){
   document.getElementById('etaTxt').innerText='--:--';
   document.getElementById('etaTxt').style.color='#64748b';
 
-  // Clear ALL Tank & Telemetry labels completely
   let thInfo=document.getElementById('tankHInfo');
   thInfo.innerHTML='H:--cm &bull; ON:--cm &bull; OFF:--cm';
   thInfo.style.color='#64748b';
@@ -386,6 +397,11 @@ function setOfflineUI(){
   document.getElementById('svgPct').setAttribute('fill','#ff2a5f');
   document.getElementById('calLiveCm').innerText='OFFLINE';
   document.getElementById('calLivePct').innerText='--%';
+
+  let clv=document.getElementById('calLiveV');
+  if(clv) clv.innerText='OFFLINE';
+  let ccf=document.getElementById('calCurFactor');
+  if(ccf) ccf.innerText='--';
 
   let blTxt=document.getElementById('blValText');
   blTxt.innerText='--%';
@@ -457,7 +473,6 @@ function connectMqttClient(){
   mqttClient.onMessageArrived = (msg)=>{
     try {
       if(msg.destinationName === TOPIC_TELEM){
-        // Ignore stale broker-cached retained messages so an offline ESP32 never flashes old numbers
         if(msg.retained) return;
         let d = JSON.parse(msg.payloadString);
         renderTelem(d);
@@ -585,6 +600,24 @@ function captureTankHeightNow(){
   }
   saveCalib('sonarMsg','winSonar');
 }
+function calibrateVoltageNow(){
+  if(!systemOnline){openWin('offlineAlert');return;}
+  let rv=parseFloat(document.getElementById('cRealV').value);
+  if(isNaN(rv)||rv<80||rv>300){
+    alert('Please enter a valid multimeter reference voltage between 80V and 300V AC.');
+    return;
+  }
+  sendApiCmd('/vcalib?pw=12345678&ref='+rv).then(res=>{
+    if(res==='NO_VOLT'){
+      alert('Cannot calibrate while mains voltage is 0V / No Current!');
+      return;
+    }
+    if(cloudModeActive) setTimeout(()=>sendApiCmd('/sync_all'),250);
+    else fetchData();
+    let m=document.getElementById('vCalMsg');
+    if(m){m.style.display='block';setTimeout(()=>{m.style.display='none';},2200);}
+  });
+}
 function setHistView(mode){
   histMode=mode;
   document.getElementById('paneTable').style.display=(mode===0)?'flex':'none';
@@ -700,6 +733,8 @@ function renderTelem(d){
   distEl.style.color='#00f3ff';
 
   document.getElementById('volt').innerText=d.vText;
+  let clv=document.getElementById('calLiveV');if(clv)clv.innerText=d.vText;
+  let ccf=document.getElementById('calCurFactor');if(ccf&&d.vCal)ccf.innerText=Number(d.vCal).toFixed(3);
   document.getElementById('calLiveCm').innerText=distStr;
   document.getElementById('calLivePct').innerText=d.p+'% ('+curL+'L)';
 
@@ -770,6 +805,7 @@ function renderTelem(d){
   else if(d.coolS>0){st.className='badge b-wait';st.innerText='COOLDOWN GUARD ('+fmtMMSS(d.coolS)+')';vl.setAttribute('fill','#ffb800');}
   else if(d.pump){st.className='badge b-run';st.innerText='FILLING ACTIVE';imp.classList.add('spinning');pf.setAttribute('class','flow-on');pf.setAttribute('stroke',col);is.setAttribute('class','stream-on');is.setAttribute('stroke',col);vl.setAttribute('fill','#00ff88');}
   else if(d.maxR){st.className='badge b-run';st.innerText='MAX LEVEL REACHED (<20CM)';vl.setAttribute('fill','#00ff88');}
+  else if(d.manStop){st.className='badge b-stdby';st.innerText='MANUAL STOP (LOCKED)';vl.setAttribute('fill','#475569');}
   else{st.className='badge b-stdby';st.innerText=anyTmrOn?'TIMER STANDBY':(d.cfg&&d.cfg.sEn?'SOLAR-SYNC STANDBY':'STANDBY');vl.setAttribute('fill','#475569');}
 }
 
